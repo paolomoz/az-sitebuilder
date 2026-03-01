@@ -1,1 +1,152 @@
 /* add global styles that can be loaded post LCP here */
+
+/* ============================================================
+   Enhanced section styles for better engagement & hierarchy
+   ============================================================ */
+
+/* Highlight section — used for key stat callouts */
+main .section.highlight {
+  background-color: #f4eef2;
+  margin: 0;
+  padding: 48px 0;
+  border-top: 3px solid #830051;
+}
+
+main .section.highlight h2 {
+  color: #830051;
+}
+
+/* Accent section — warm background for differentiation */
+main .section.accent {
+  background-color: #fdf6e8;
+  margin: 0;
+  padding: 48px 0;
+  border-top: 3px solid #efab00;
+}
+
+/* ============================================================
+   Key stat number emphasis — applied via <strong> in intro blocks
+   ============================================================ */
+.introduction strong {
+  color: #830051;
+  font-size: 1.15em;
+}
+
+/* ============================================================
+   Table data improvements for efficacy data
+   ============================================================ */
+.table-data.block table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+.table-data.block table td strong {
+  color: #830051;
+  font-size: 1.1em;
+}
+
+/* Accent cells */
+.table-data.block table td.accent {
+  background-color: #f6cee7;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Large stat numbers in cards — first strong in body
+   ============================================================ */
+.cards-teaser .cards-teaser-card-body > p:not(:first-child) strong {
+  color: #d0006f;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Better CTA prominence
+   ============================================================ */
+
+/* Columns-teaser buttons */
+.columns-teaser a.button:any-link {
+  background-color: #d0006f;
+  border-color: #d0006f;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.columns-teaser a.button:hover {
+  background-color: #a30058;
+  border-color: #a30058;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgb(208 0 111 / 30%);
+}
+
+/* Cards-teaser buttons */
+.cards-teaser .cards-teaser-card-body a.button {
+  background-color: #d0006f;
+  border-color: #d0006f;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.cards-teaser .cards-teaser-card-body a.button:hover {
+  background-color: #a30058;
+  border-color: #a30058;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgb(208 0 111 / 30%);
+}
+
+/* ============================================================
+   Accordion visual improvements
+   ============================================================ */
+
+/* Better visual indicators for expandable sections */
+.accordion .accordion-item-label {
+  border-left: 3px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.accordion .accordion-item-label:hover {
+  border-left-color: #d0006f;
+}
+
+.accordion .accordion-item.active .accordion-item-label {
+  border-left-color: #830051;
+}
+
+/* ============================================================
+   Dark section enhancements
+   ============================================================ */
+main .section.dark {
+  background-color: #1a2332;
+  background-image: linear-gradient(135deg, #1a2332 0%, #2e3232 100%);
+}
+
+/* ============================================================
+   Introduction block — centered stat callout variant
+   ============================================================ */
+.section.highlight .introduction p {
+  text-align: center;
+}
+
+.section.highlight .introduction h2 {
+  text-align: center;
+  font-size: var(--heading-font-size-l);
+}
+
+/* ============================================================
+   Improved spacing between sections
+   ============================================================ */
+main > .section + .section {
+  margin-top: 0;
+}
+
+/* ============================================================
+   Columns-teaser text emphasis for key data
+   ============================================================ */
+.columns-teaser h3 {
+  color: #830051;
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
+}

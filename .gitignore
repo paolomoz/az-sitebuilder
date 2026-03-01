@@ -8,6 +8,13 @@ helix-importer-ui
 *.bak
 .idea
 
+# Secrets
+.env
+
+# Generated content (per-site)
+images/
+analysis/
+
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md

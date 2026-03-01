@@ -5,3 +5,9 @@ LICENSE
 package.json
 package-lock.json
 test/*
+tools/*
+brand/*
+sites/*
+images/*
+analysis/*
+drafts/*

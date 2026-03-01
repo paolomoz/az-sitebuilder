@@ -1,0 +1,73 @@
+/* Import component-specific tokens */
+@import url('./tabs-large-tokens.css');
+
+/* tabs-large block styles */
+
+.tabs-large {
+  padding: 0;
+}
+
+.tabs-large .tabs-large-divider {
+  width: 100%;
+  height: var(--tabs-large-divider-height);
+  background-color: var(--tabs-large-divider-color);
+}
+
+.tabs-large .tabs-large-list {
+  display: flex;
+  gap: var(--tabs-large-gap);
+  max-width: var(--tabs-large-max-width);
+  margin: 0 auto;
+}
+
+.tabs-large .tabs-large-list button {
+  flex: 1 1 0;
+  margin: 0;
+  border: var(--tabs-large-border-width) var(--tabs-large-border-style) var(--tabs-large-border-color);
+  border-radius: var(--tabs-large-border-radius);
+  padding: var(--tabs-large-tab-padding-y) var(--tabs-large-tab-padding-x);
+  background-color: var(--tabs-large-inactive-bg);
+  color: var(--tabs-large-inactive-text-color);
+  font-family: var(--tabs-large-font-family);
+  font-size: var(--tabs-large-font-size);
+  font-weight: var(--tabs-large-inactive-font-weight);
+  font-style: var(--tabs-large-font-style);
+  line-height: var(--tabs-large-line-height);
+  letter-spacing: var(--tabs-large-letter-spacing);
+  text-transform: var(--tabs-large-text-transform);
+  text-align: var(--tabs-large-text-align);
+  cursor: pointer;
+  transition: background-color var(--tabs-large-transition-duration) var(--tabs-large-transition-timing);
+}
+
+.tabs-large .tabs-large-list button p {
+  margin: 0;
+}
+
+.tabs-large .tabs-large-list button[aria-selected='true'] {
+  background-color: var(--tabs-large-active-bg);
+  color: var(--tabs-large-active-text-color);
+  font-weight: var(--tabs-large-active-font-weight);
+  cursor: default;
+}
+
+.tabs-large .tabs-large-panel {
+  padding: 24px;
+  max-width: var(--tabs-large-max-width);
+  margin: 0 auto;
+}
+
+.tabs-large .tabs-large-panel[aria-hidden='true'] {
+  display: none;
+}
+
+.tabs-large .tabs-large-panel img {
+  max-width: 80px;
+  height: auto;
+}
+
+/* Allow nested blocks to control their own image sizing */
+.tabs-large .tabs-large-panel .block img {
+  max-width: none;
+  height: initial;
+}

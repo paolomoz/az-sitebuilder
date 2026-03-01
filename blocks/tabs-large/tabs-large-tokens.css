@@ -1,0 +1,46 @@
+/* blocks/tabs-large/tabs-large-tokens.css */
+
+/* All values extracted from tabs-large-measurements.txt */
+
+.tabs-large {
+  /* ===== LAYOUT & DIMENSIONS ===== */
+  --tabs-large-max-width: 1180px;
+  --tabs-large-tab-row-height: 50px;
+  --tabs-large-gap: 2px;
+  --tabs-large-divider-height: 2px;
+
+  /* ===== TAB SPACING ===== */
+  --tabs-large-tab-padding-x: 32px;
+  --tabs-large-tab-padding-y: 16px;
+
+  /* ===== COLORS ===== */
+  --tabs-large-active-bg: #d0006f;
+  --tabs-large-inactive-bg: #ebefee;
+  --tabs-large-active-text-color: #fff;
+  --tabs-large-inactive-text-color: #363b3b;
+  --tabs-large-divider-color: #d0006f;
+  --tabs-large-border-color: #d0006f;
+
+  /* ===== TYPOGRAPHY ===== */
+  --tabs-large-font-family: 'Lexia', sans-serif;
+  --tabs-large-font-size: 14px;
+  --tabs-large-active-font-weight: 700;
+  --tabs-large-inactive-font-weight: 400;
+  --tabs-large-line-height: 18px;
+  --tabs-large-letter-spacing: 0;
+  --tabs-large-text-transform: none;
+  --tabs-large-text-align: center;
+  --tabs-large-font-style: normal;
+
+  /* ===== BORDERS ===== */
+  --tabs-large-border-width: 1px;
+  --tabs-large-border-style: solid;
+  --tabs-large-border-radius: 0;
+
+  /* ===== SHADOWS ===== */
+  --tabs-large-box-shadow: none;
+
+  /* ===== TRANSITIONS ===== */
+  --tabs-large-transition-duration: 0.2s;
+  --tabs-large-transition-timing: ease;
+}

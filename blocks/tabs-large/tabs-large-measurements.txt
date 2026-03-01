@@ -1,0 +1,56 @@
+VISUAL MEASUREMENT CHECKLIST FOR tabs-large
+================================================
+Extracted from Figma node: 3446:31230
+Component: In-Page Tabs/Large
+
+LAYOUT & DIMENSIONS
+☑ Container width: 1440px (source: instance width="1440" in metadata)
+☑ Tabs area max-width: 1180px (source: min-w-[375px] max-w-[1180px] from design_context, variable site-max-width=1180)
+☑ Container height: 70px (source: instance height="70" in metadata)
+☑ Tab row height: 50px (source: Large Tabs Row/Fill h-[50px] from design_context)
+☑ Container padding: 0px top, 130px left, 0px bottom, 130px right (source: centered 1180px in 1440px → (1440-1180)/2 = 130px)
+☑ Grid/Flex layout: flex-row (source: flex flex-row from design_context)
+☑ Gap between tabs: 2px (source: gap-[2px] from Tabs container in design_context)
+☑ Column count: 6 (source: 6 tab children in design_context)
+☑ Tab width: equal/fluid (source: w-full on each tab item)
+
+SPACING (EXACT PIXELS)
+☑ Tab internal padding: 16px top, 32px right, 16px bottom, 32px left (source: px-[32px] py-[16px] from Tab Content items)
+☑ Divider height: 2px (source: Divider frame height="2" in metadata)
+
+COLORS (EXACT HEX)
+☑ Active tab background: #d0006f (source: bg-[var(--Background-Core-3,#d0006f)] from Tab 1 Content)
+☑ Inactive tab background: #ebefee (source: bg-[var(--Background-Supporting-1,#ebefee)] from Tab 2 Content)
+☑ Active tab text color: #ffffff (source: text-[color:var(--Text-Body-2,#ffffff)] from Tab 1 text)
+☑ Inactive tab text color: #363b3b (source: text-[color:var(--Text-Body-1,#363b3b)] from Tab 2 text)
+☑ Divider color: #d0006f (source: bg-[var(--Background-Core-3,#d0006f)] from Divider)
+☑ Tab border color: #d0006f (source: border-[1px] border-solid border-[#d0006f] from Row/Tab items)
+☑ Hover background: none specified (source: no hover states in Figma extraction)
+☑ Hover text color: none specified (source: no hover states in Figma extraction)
+
+TYPOGRAPHY (ALL PROPERTIES)
+☑ Tab font-family: Lexia, sans-serif (source: font-['Lexia',sans-serif] from design_context, variable Font-Family/Lexia=Lexia)
+☑ Active tab font-size: 14px (source: text-[14px] from Tab 1 text, variable Tokens/Font Size/14=14)
+☑ Inactive tab font-size: 14px (source: text-[14px] from Tab 2 text)
+☑ Active tab font-weight: 700/bold (source: font-bold from Tab 1 text, variable Weight | Style/Bold=700)
+☑ Inactive tab font-weight: 400/normal (source: font-normal from Tab 2 text, variable Weight | Style/400=400)
+☑ Tab line-height: 18px (source: leading-[18px] from Tab text, variable Tokens/Line Height/18=18)
+☑ Tab letter-spacing: 0 (source: no letter-spacing class in Tailwind output)
+☑ Tab text-transform: none (source: no uppercase/capitalize classes)
+☑ Tab text-align: center (source: text-center from Tab text)
+☑ Tab font-style: normal (source: no italic class in Tailwind output)
+
+BORDERS & RADIUS
+☑ Tab border width: 1px (source: border-[1px] from Tab Content items)
+☑ Tab border style: solid (source: border-solid from Tab Content items)
+☑ Tab border color: #d0006f (source: border-[#d0006f] from Tab Content items)
+☑ Border radius: 0px (source: no rounded-* classes in Tailwind output)
+☑ Divider border: none, uses background color (source: bg-[var(--Background-Core-3,#d0006f)])
+
+SHADOWS (EXACT VALUES)
+☑ Box-shadow: none (source: no shadow classes in Tailwind output)
+
+EFFECTS & TRANSITIONS
+☑ Hover transform: none specified (source: no hover/transition data in Figma extraction)
+☑ Transition duration: none specified (source: no transition data)
+☑ Opacity changes: none (source: no opacity classes)
