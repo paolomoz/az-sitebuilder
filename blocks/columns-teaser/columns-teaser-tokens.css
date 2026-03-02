@@ -14,7 +14,7 @@
   --columns-teaser-text-col-max-width: 577px;
 
   /* ===== CONTAINER COLORS ===== */
-  --columns-teaser-background: #efefef;
+  --columns-teaser-background: transparent;
 
   /* ===== TYPOGRAPHY - HEADINGS ===== */
   --columns-teaser-heading-font-family: 'Lexia', sans-serif;
@@ -24,7 +24,7 @@
   --columns-teaser-heading-line-height: 34px;
   --columns-teaser-heading-letter-spacing: 0;
   --columns-teaser-heading-text-transform: none;
-  --columns-teaser-heading-color: #4f0031;
+  --columns-teaser-heading-color: #830051;
   --columns-teaser-heading-margin-top: 0;
   --columns-teaser-heading-margin-bottom: 0;
 

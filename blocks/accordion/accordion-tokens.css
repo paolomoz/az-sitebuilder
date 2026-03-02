@@ -5,11 +5,11 @@
 .accordion {
   /* ===== LAYOUT & DIMENSIONS ===== */
   --accordion-max-width: 1180px;
-  --accordion-header-padding-top: 40px;
+  --accordion-header-padding-top: 24px;
   --accordion-header-padding-bottom: 20px;
-  --accordion-header-padding-x: 0;
+  --accordion-header-padding-x: 12px;
   --accordion-body-padding-y: 20px;
-  --accordion-body-padding-x: 0;
+  --accordion-body-padding-x: 12px;
   --accordion-gap: 24px;
 
   /* ===== CONTAINER COLORS ===== */

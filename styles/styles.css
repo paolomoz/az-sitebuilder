@@ -300,7 +300,7 @@ main img {
 
 /* sections */
 main > .section {
-  margin: 40px 0;
+  margin: 56px 0;
 }
 
 main > .section > div {
@@ -311,6 +311,10 @@ main > .section > div {
 
 main > .section:first-of-type {
   margin-top: 0;
+}
+
+main > .section:has(.hero-teaser) {
+  margin-bottom: 0;
 }
 
 @media (width >= 900px) {
@@ -324,7 +328,7 @@ main .section.light,
 main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
-  padding: 40px 0;
+  padding: 56px 0;
 }
 
 main .section.dark {

@@ -149,3 +149,28 @@ Three fixes required for readable hero text over background images:
 2. Content row z-index higher than overlay
 3. Text cell explicitly positioned above the `<picture>` element
 See `blocks/hero-teaser/hero-teaser.css` for the implementation.
+
+## Design Context
+
+### Users
+UK Healthcare Professionals (doctors, nurses, pharmacists) visiting product-specific HCP portals during clinical decision-making. They need fast access to efficacy data, safety profiles, dosing information, and prescribing resources. Context is professional, time-pressured, and evidence-driven.
+
+### Brand Personality
+**Clinically authoritative, supportively warm, editorially premium.** AstraZeneca positions itself as a trusted scientific partner standing alongside HCPs — never a vendor, never casual, never patronising.
+
+### Aesthetic Direction
+- **Visual tone**: Premium editorial pharmaceutical — clean, spacious, typography-led
+- **Reference site**: myastrazeneca.co.uk (live screenshots in `analysis/az-reference-screenshots/`)
+- **Reference analysis**: `brand/myastrazeneca-analysis.md` (16-page visual audit)
+- **Theme**: Light mode only, white primary background
+- **Typography**: The live site uses a thin-weight serif (Lexia) for headings; our block library uses Roboto Condensed Bold — this is a deliberate simplification but headings should remain prominent and use AZ Magenta (#830051)
+- **Imagery**: Double-exposure artistic portraits (Tier 1), warm lifestyle photography (Tier 2), product/device shots (Tier 3), dramatic oncology imagery (Tier 4). See `brand/az-brand-voice.md` Section 4.
+- **Anti-references**: Generic stock photography, consumer health websites, clinical/sterile aesthetics, dark mode
+
+### Design Principles
+1. **White space is a feature**: Generous spacing between sections (48-80px). Pages breathe. No visual clutter.
+2. **Typography drives hierarchy**: Headings are the dominant visual element — large, prominent, AZ Magenta. Data and statistics use bold emphasis.
+3. **Minimal UI chrome**: No heavy borders, no drop shadows on containers, no gradients on backgrounds. Cards are flat or very subtly elevated. The design is reductive.
+4. **Data when it matters, story when it doesn't**: Disease context pages are narrative. Product efficacy pages are data-forward with large statistics and trial tables.
+5. **Regulatory elements are omnipresent but understated**: PI, AE reporting, approval codes appear on every page in smaller, lighter styling at the bottom.
+6. **Each product is a mini-brand**: Products have their own accent colour that influences imagery and highlights, unified by the AZ global chrome (header/footer) and magenta CTAs.
