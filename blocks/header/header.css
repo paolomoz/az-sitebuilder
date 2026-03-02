@@ -384,6 +384,12 @@ header nav .nav-tools {
   margin-left: auto;
 }
 
+header nav .nav-tools .default-content-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 /* stylelint-disable-next-line no-descending-specificity */
 header nav .nav-tools p {
   margin: 0;

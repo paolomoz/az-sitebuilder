@@ -135,6 +135,7 @@ tabs-large, title
 ### DA & Preview
 - DA normalizes repo names to lowercase
 - All `<img>` tags in DA content MUST use public CDN URLs, never local paths
+- DA rejects external image URLs from third-party domains (even well-known ones like `myastrazeneca.co.uk`) — they become `about:error`. Always download the asset, deploy to the site's Cloudflare Pages CDN, and reference via `{sitename}-images.pages.dev/`
 - Before DA upload, verify: `grep -rn 'src="/' drafts/{sitename}/ --include='*.html'` should return nothing
 - The AEM Code Sync GitHub App must be installed on the repo
 
