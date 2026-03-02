@@ -71,7 +71,7 @@ main .section.accent {
   border-color: #d0006f;
   color: #fff;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .columns-teaser a.button:hover {
@@ -87,7 +87,7 @@ main .section.accent {
   border-color: #d0006f;
   color: #fff;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cards-teaser .cards-teaser-card-body a.button:hover {

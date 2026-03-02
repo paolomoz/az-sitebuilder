@@ -19,6 +19,7 @@
 
 .columns-teaser img {
   width: 100%;
+  height: auto;
 }
 
 .columns-teaser > div > div {
