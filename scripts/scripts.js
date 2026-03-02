@@ -122,6 +122,23 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+
+  // Process and remove document-level metadata block before block decoration
+  // to prevent it from being loaded as a visual block (404 on blocks/metadata/)
+  main.querySelectorAll('.metadata').forEach((metaBlock) => {
+    metaBlock.querySelectorAll(':scope > div').forEach((row) => {
+      const key = row.children[0]?.textContent?.trim().toLowerCase();
+      const value = row.children[1]?.textContent?.trim();
+      if (key && value && !document.head.querySelector(`meta[name="${key}"]`)) {
+        const meta = document.createElement('meta');
+        meta.name = key;
+        meta.content = value;
+        document.head.appendChild(meta);
+      }
+    });
+    metaBlock.closest('.section')?.remove();
+  });
+
   decorateBlocks(main);
   decorateButtons(main);
 }
