@@ -3,7 +3,7 @@
 Multi-site AEM Edge Delivery Services project for AstraZeneca drug launch HCP websites.
 One shared codebase (blocks, styles, scripts) serving multiple sites via URL-prefixed subfolders.
 
-See @AGENTS.md for EDS fundamentals.
+See @AGENTS.md for EDS fundamentals. See `blocks/BLOCK-REFERENCE.md` for block HTML markup structures.
 
 ## Architecture
 
@@ -36,17 +36,63 @@ az-sitebuilder/
 
 Header and footer blocks auto-detect the site prefix from the URL path.
 When at `/{sitename}/efficacy`, nav loads from `/{sitename}/nav` and footer from `/{sitename}/footer`.
+All links in nav and footer must use `/{sitename}/` prefix. Logo and search icon must use CDN URLs.
 
-Each site's nav.plain.html and footer.plain.html must use **prefixed links**:
+### Nav Template (`drafts/{sitename}/nav.plain.html`)
+
 ```html
-<!-- In drafts/velostra/nav.plain.html -->
-<a href="/velostra/efficacy">Efficacy</a>
-<!-- NOT just /efficacy -->
+<div>
+  <p><a href="/{sitename}/">Contact Us</a> | <a href="/{sitename}/">AZ Employee Login</a></p>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>top</div>
+    </div>
+  </div>
+</div>
+<hr>
+<div>
+  <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/astrazeneca-logo.png" alt="AstraZeneca"></a></p>
+</div>
+<hr>
+<div>
+  <ul>
+    <li><a href="/{sitename}/{page-slug}">Page Name</a></li>
+    <!-- one <li> per nav page from the briefing; nest <ul> for dropdowns -->
+  </ul>
+</div>
+<hr>
+<div>
+  <p><a href="/{sitename}/"><img src="https://revantha-images.pages.dev/search.svg" alt="Search"></a></p>
+  <p><strong><a href="/{sitename}/">Login</a></strong></p>
+</div>
 ```
 
-The brand logo link should also point to the site root:
+### Footer Template (`drafts/{sitename}/footer.plain.html`)
+
 ```html
-<a href="/velostra/"><img src="https://velostra-images.pages.dev/astrazeneca-logo.svg" alt="AstraZeneca"></a>
+<div>
+  <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/astrazeneca-logo.png" alt="AstraZeneca"></a></p>
+  <p>{approval-code}</p>
+  <p>{BRAND} is a registered trademark of AstraZeneca. &copy; AstraZeneca 2026. All rights reserved.</p>
+</div>
+<hr>
+<div>
+  <!-- one <p> per nav page -->
+  <p><a href="/{sitename}/{page-slug}">Page Name</a></p>
+</div>
+<hr>
+<div>
+  <p><a href="https://www.mhra.gov.uk/yellowcard">Report Adverse Event</a></p>
+  <p><a href="https://contactazmedical.astrazeneca.com/">Medical Information</a></p>
+  <p><a href="/{sitename}/">Privacy Policy</a></p>
+  <p><a href="/{sitename}/">Terms of Use</a></p>
+  <p><a href="/{sitename}/">Accessibility</a></p>
+</div>
+<hr>
+<div>
+  <p>Date of Preparation: March 2026</p>
+</div>
 ```
 
 ## DA Integration
@@ -86,8 +132,8 @@ npx @adobe/aem-cli up --no-open --html-folder drafts
 
 ## Available Blocks
 
-accordion, action-bar, cards, cards-teaser, carousel-teaser, columns, columns-teaser,
-embed, footer, fragment, header, hero, hero-teaser, image, introduction, table-data,
+accordion, action-bar, cards-teaser, carousel-teaser, columns-teaser,
+embed, footer, fragment, header, hero-teaser, image, introduction, table-data,
 tabs-large, title
 
 ## Brand Guidelines
