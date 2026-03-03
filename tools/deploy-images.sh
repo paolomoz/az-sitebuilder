@@ -21,6 +21,7 @@ if [ ! -d "$IMG_DIR" ]; then
 fi
 
 # Copy shared icons (AZ logo, search) into the images dir for deployment
+cp "$PROJECT_DIR/icons/astrazeneca-logo.png" "$IMG_DIR/" 2>/dev/null || true
 cp "$PROJECT_DIR/icons/astrazeneca-logo.svg" "$IMG_DIR/" 2>/dev/null || true
 cp "$PROJECT_DIR/icons/search.svg" "$IMG_DIR/" 2>/dev/null || true
 

@@ -54,7 +54,7 @@ All links in nav and footer must use `/{sitename}/` prefix. Logo and search icon
 </div>
 <hr>
 <div>
-  <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/astrazeneca-logo.png" alt="AstraZeneca"></a></p>
+  <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/astrazeneca-logo.png" alt="AstraZeneca" width="216" height="52"></a></p>
 </div>
 <hr>
 <div>
@@ -165,6 +165,13 @@ tabs-large, title
 6. **Upload to DA**: `./tools/upload-to-da.sh {sitename}`
 7. **Preview on AEM CDN**: `./tools/preview-all.sh {sitename}`
 8. **Screenshot & QA**: `node tools/screenshot-local.js {sitename}`
+
+## Skill Source Code
+
+When asked to "update the skill" or "fix the skill", edit the **source files** at `/Users/paolo/claude/skills/skills/`. Never edit the local plugin cache at `~/.claude/plugins/cache/` — that is updated manually by the user via `/plugins update`.
+
+- **eds-website-builder**: `/Users/paolo/claude/skills/skills/eds-website-builder/SKILL.md`
+- **briefing-critique**: `/Users/paolo/claude/skills/skills/briefing-critique/SKILL.md`
 
 ## Lessons Learned (from Zenvara & Clareon builds)
 
