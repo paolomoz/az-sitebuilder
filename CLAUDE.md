@@ -40,9 +40,11 @@ All links in nav and footer must use `/{sitename}/` prefix. Logo and search icon
 
 ### Nav Template (`drafts/{sitename}/nav.plain.html`)
 
+<!-- Top-bar URLs below are AZ-wide defaults. If the briefing specifies different URLs, use those instead. -->
+
 ```html
 <div>
-  <p><a href="/{sitename}/">Contact Us</a> | <a href="/{sitename}/">AZ Employee Login</a></p>
+  <p><a href="https://www.astrazeneca.co.uk/contact-us.html">Contact Us</a> | <a href="https://login.astrazeneca.com">AZ Employee Login</a></p>
   <div class="section-metadata">
     <div>
       <div>Style</div>
@@ -63,18 +65,20 @@ All links in nav and footer must use `/{sitename}/` prefix. Logo and search icon
 </div>
 <hr>
 <div>
-  <p><a href="/{sitename}/"><img src="https://revantha-images.pages.dev/search.svg" alt="Search"></a></p>
+  <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/search.svg" alt="Search"></a></p>
   <p><strong><a href="/{sitename}/">Login</a></strong></p>
 </div>
 ```
 
 ### Footer Template (`drafts/{sitename}/footer.plain.html`)
 
+<!-- If the briefing specifies different footer text (copyright, trademark, URLs), use the briefing's text verbatim. -->
+
 ```html
 <div>
   <p><a href="/{sitename}/"><img src="https://{sitename}-images.pages.dev/astrazeneca-logo.png" alt="AstraZeneca"></a></p>
-  <p>{approval-code}</p>
-  <p>{BRAND} is a registered trademark of AstraZeneca. &copy; AstraZeneca 2026. All rights reserved.</p>
+  <p>{approval-code} | DOP: {date-of-preparation}</p>
+  <p>{copyright-line-from-briefing}</p>
 </div>
 <hr>
 <div>
@@ -83,15 +87,15 @@ All links in nav and footer must use `/{sitename}/` prefix. Logo and search icon
 </div>
 <hr>
 <div>
-  <p><a href="https://www.mhra.gov.uk/yellowcard">Report Adverse Event</a></p>
+  <p><a href="https://yellowcard.mhra.gov.uk/">Report Adverse Event</a></p>
   <p><a href="https://contactazmedical.astrazeneca.com/">Medical Information</a></p>
-  <p><a href="/{sitename}/">Privacy Policy</a></p>
-  <p><a href="/{sitename}/">Terms of Use</a></p>
-  <p><a href="/{sitename}/">Accessibility</a></p>
+  <p><a href="https://www.astrazeneca.co.uk/our-company/privacy-notice.html">Privacy Policy</a></p>
+  <p><a href="https://www.astrazeneca.co.uk/our-company/terms-of-use.html">Terms of Use</a></p>
+  <p><a href="https://www.astrazeneca.co.uk/accessibility.html">Accessibility</a></p>
 </div>
 <hr>
 <div>
-  <p>Date of Preparation: March 2026</p>
+  <p>Date of Preparation: {date-of-preparation}</p>
 </div>
 ```
 
@@ -189,6 +193,18 @@ tabs-large, title
 - Single-product sites: flat top-level nav, no dropdowns (one dropdown with all pages adds a click with no benefit)
 - All nav/footer links must be prefixed with `/{sitename}/` for multi-site routing
 - Nav structure: top bar (Contact, Login, Language) | logo | page links | search + login CTA
+
+### Accordion / Prescribing Information
+- Generate the accordion (PI + AE Reporting + References) once as a standalone HTML block
+- Copy that exact HTML identically into every page — do not re-generate per page
+- This prevents formatting drift (e.g. inconsistent `<strong>` wrapping)
+- When using parallel page generation, include the accordion HTML in the shared context bundle
+
+### Briefing vs Template Precedence
+- When an MLR-approved briefing specifies footer/nav content (URLs, copyright text, approval codes), use the briefing's text verbatim — do not fall back to CLAUDE.md template defaults
+- The templates in this file provide structure; the briefing provides content
+- After generating nav and footer, verify every link target against the briefing's nav/footer sections
+- Common miss: regulatory links (Privacy, Terms, Accessibility) left as placeholders when the briefing specifies real URLs
 
 ### Hero Text Contrast
 Three fixes required for readable hero text over background images:
