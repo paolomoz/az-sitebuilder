@@ -175,37 +175,51 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
-function checkAccessGate() {
+function isAccessGranted() {
   const GATE_KEY = 'az-access';
   const GATE_TTL = 24 * 60 * 60 * 1000; // 24 hours
-  const SECRET = 'az26';
-
-  // Allow Lighthouse / PageSpeed Insights / automated testing through
-  if (navigator.webdriver || /Lighthouse|PTST/i.test(navigator.userAgent)) return true;
-
   try {
     const stored = JSON.parse(localStorage.getItem(GATE_KEY));
     if (stored && stored.t && (Date.now() - stored.t < GATE_TTL)) return true;
-  } catch { /* invalid entry, prompt again */ }
-
-  // Hide page content while prompting
-  document.body.style.visibility = 'hidden';
-
-  // eslint-disable-next-line no-alert
-  const input = prompt('Enter access code:');
-  if (input === SECRET) {
-    localStorage.setItem(GATE_KEY, JSON.stringify({ t: Date.now() }));
-    document.body.style.visibility = '';
-    return true;
-  }
-
-  document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#830051">Access denied.</p>';
-  document.body.style.visibility = '';
+  } catch { /* invalid entry */ }
   return false;
 }
 
+function showAccessGate() {
+  return new Promise((resolve) => {
+    document.body.innerHTML = '';
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;';
+    overlay.innerHTML = `<form style="text-align:center">
+      <p style="color:#830051;font-size:1.2rem;margin-bottom:1rem">Enter access code</p>
+      <input type="password" autofocus style="padding:8px 12px;font-size:1rem;border:1px solid #ccc;border-radius:4px;width:200px">
+      <button type="submit" style="margin-left:8px;padding:8px 16px;font-size:1rem;background:#d0006f;color:#fff;border:none;border-radius:4px;cursor:pointer">Go</button>
+      <p class="gate-error" style="color:#c00;margin-top:0.5rem;min-height:1.4em"></p>
+    </form>`;
+    document.body.appendChild(overlay);
+    document.body.classList.add('appear');
+
+    overlay.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = overlay.querySelector('input').value;
+      if (val === 'az26') {
+        localStorage.setItem('az-access', JSON.stringify({ t: Date.now() }));
+        overlay.remove();
+        resolve(true);
+      } else {
+        overlay.querySelector('.gate-error').textContent = 'Incorrect code';
+      }
+    });
+  });
+}
+
 async function loadPage() {
-  if (!checkAccessGate()) return;
+  if (!isAccessGranted()) {
+    await showAccessGate();
+    // reload to get fresh DOM from backend
+    window.location.reload();
+    return;
+  }
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
