@@ -175,7 +175,10 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
+const ACCESS_GATE_ENABLED = false;
+
 function checkAccessGate() {
+  if (!ACCESS_GATE_ENABLED) return;
   // Let bots / Lighthouse / PageSpeed through
   if (navigator.webdriver || /bot|crawl|spider|Lighthouse|PTST|HeadlessChrome/i.test(navigator.userAgent)) return;
 
