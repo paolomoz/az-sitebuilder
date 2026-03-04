@@ -176,3 +176,18 @@ Place as the last section of the page.
 **fragment** — Cell with `<a href="/path/to/fragment">` loads external content inline.
 
 **image** — Wrapper for standalone `<picture>`. Maintains 16:9 aspect ratio.
+
+**trial-explorer** — Interactive clinical trial data visualiser. Fetches real data from ClinicalTrials.gov via Cloudflare Worker proxy. Renders SVG bar charts, forest plots, participant flow diagrams, and baseline tables.
+```html
+<div class="trial-explorer">
+  <div>
+    <div>NCT ID</div>
+    <div>NCT02296125</div>
+  </div>
+  <div>
+    <div>Trial Name</div>
+    <div>FLAURA — Osimertinib vs SoC in NSCLC</div>
+  </div>
+</div>
+```
+Row 1: NCT ID (required). Row 2: Display name override (optional). Block fetches trial results and renders interactive charts with filter pills.

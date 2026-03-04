@@ -1,0 +1,6 @@
+name = "trial-explorer"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+CTGOV_BASE = "https://clinicaltrials.gov/api/v2"

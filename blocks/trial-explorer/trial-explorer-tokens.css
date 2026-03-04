@@ -1,0 +1,62 @@
+/* blocks/trial-explorer/trial-explorer-tokens.css */
+
+.trial-explorer {
+  /* ===== LAYOUT ===== */
+  --te-max-width: 1180px;
+  --te-section-gap: 32px;
+  --te-padding: 24px;
+
+  /* ===== CHART COLORS ===== */
+  --te-color-treatment: #830051;
+  --te-color-control: #b8b8b8;
+  --te-color-alt: #d0006f;
+  --te-color-alt2: #efab00;
+  --te-color-ci-line: #363b3b;
+  --te-color-reference-line: #999;
+  --te-color-grid: #e5e5e5;
+
+  /* ===== FILTER PILLS ===== */
+  --te-pill-active-bg: #d0006f;
+  --te-pill-active-text: #fff;
+  --te-pill-inactive-bg: #ebefee;
+  --te-pill-inactive-text: #363b3b;
+  --te-pill-radius: 20px;
+  --te-pill-padding: 8px 18px;
+  --te-pill-font-size: 13px;
+  --te-pill-gap: 8px;
+
+  /* ===== TABLE ===== */
+  --te-table-header-bg: #830051;
+  --te-table-header-text: #fff;
+  --te-table-alt-row: #f8f8f8;
+  --te-table-border: #e5e5e5;
+  --te-table-font-size: 13px;
+
+  /* ===== STATS PANEL ===== */
+  --te-stats-bg: #f4eef2;
+  --te-stats-border-top: 3px solid #830051;
+  --te-stats-padding: 24px;
+
+  /* ===== BADGE ===== */
+  --te-badge-bg: #830051;
+  --te-badge-text: #fff;
+  --te-badge-radius: 4px;
+  --te-badge-padding: 4px 10px;
+  --te-badge-font-size: 12px;
+
+  /* ===== TYPOGRAPHY ===== */
+  --te-heading-color: #830051;
+  --te-heading-font: 'Roboto Condensed', 'Roboto', sans-serif;
+  --te-body-color: #363b3b;
+  --te-body-font: 'Roboto', sans-serif;
+  --te-label-font-size: 12px;
+  --te-value-font-size: 28px;
+
+  /* ===== TRANSITIONS ===== */
+  --te-transition-duration: 0.4s;
+  --te-transition-timing: ease;
+
+  /* ===== SKELETON ===== */
+  --te-skeleton-bg: #e5e5e5;
+  --te-skeleton-shine: #f0f0f0;
+}
