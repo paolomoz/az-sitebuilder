@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Critique: treluxia</title>
+<style>
+  :root {
+    --critical: #c0392b;
+    --critical-bg: #fdecea;
+    --high: #e67e22;
+    --high-bg: #fef5e7;
+    --medium: #f1c40f;
+    --medium-bg: #fef9e7;
+    --low: #95a5a6;
+    --low-bg: #f4f6f6;
+    --pass: #27ae60;
+    --pass-bg: #eafaf1;
+    --text: #2c3e50;
+    --border: #e0e0e0;
+    --bg: #fafafa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.5;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* Panel: full-width by default, shrinks when preview opens */
+  .panel {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 24px 64px;
+    background: var(--bg);
+    transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .panel .panel-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    transition: max-width 0.3s ease;
+  }
+  body.preview-open .panel {
+    width: 440px;
+    min-width: 440px;
+    max-width: 440px;
+    padding: 24px 20px 64px;
+    border-right: 1px solid var(--border);
+  }
+  body.preview-open .panel .panel-inner {
+    max-width: none;
+  }
+
+  /* Preview: hidden by default, expands when open */
+  .preview {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    overflow: hidden;
+    transition: flex 0.3s ease, opacity 0.3s ease;
+    flex: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  body.preview-open .preview {
+    flex: 1;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .preview-bar .url-display {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: #7f8c8d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .preview-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--border); }
+  .preview-bar .close-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    padding: 3px 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .preview-bar .close-btn:hover { background: var(--critical-bg); color: var(--critical); border-color: var(--critical); }
+
+  .preview iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+  }
+
+  /* Typography */
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 2px; }
+  body.preview-open h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.1rem; font-weight: 700; margin: 28px 0 10px; }
+  body.preview-open h2 { font-size: 1rem; margin: 24px 0 8px; }
+
+  .subtitle { color: #7f8c8d; font-size: 0.82rem; margin-bottom: 24px; }
+
+  /* Fidelity badges */
+  .fidelity { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .fidelity-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    flex: 1;
+    min-width: 140px;
+  }
+  .fidelity-item .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7f8c8d; margin-bottom: 2px; }
+  .fidelity-item .value { font-weight: 700; font-size: 0.9rem; }
+  .fidelity-item .evidence { font-size: 0.78rem; color: #7f8c8d; margin-top: 4px; font-style: italic; }
+  body.preview-open .fidelity-item .evidence { display: none; }
+  .badge-strict { color: var(--critical); }
+  .badge-flexible { color: var(--pass); }
+
+  /* Summary cards */
+  .summary-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .summary-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+  }
+  .summary-card .count { font-size: 1.8rem; font-weight: 700; }
+  body.preview-open .summary-card .count { font-size: 1.5rem; }
+  .summary-card .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: #7f8c8d; }
+  .summary-card.critical { border-left: 3px solid var(--critical); }
+  .summary-card.critical .count { color: var(--critical); }
+  .summary-card.high { border-left: 3px solid var(--high); }
+  .summary-card.high .count { color: var(--high); }
+  .summary-card.medium { border-left: 3px solid var(--medium); }
+  .summary-card.medium .count { color: var(--medium); }
+  .summary-card.low { border-left: 3px solid var(--low); }
+  .summary-card.low .count { color: var(--low); }
+
+  /* Verdict banner */
+  .verdict {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  body.preview-open .verdict { font-size: 0.85rem; padding: 8px 14px; }
+  .verdict.pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass); }
+  .verdict.needs-fixes { background: var(--medium-bg); color: #b7950b; border: 1px solid var(--medium); }
+  .verdict.blocked { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
+
+  /* Pill */
+  .pill {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .pill.critical { background: var(--critical); color: #fff; }
+  .pill.high { background: var(--high); color: #fff; }
+  .pill.medium { background: var(--medium); color: #333; }
+  .pill.low { background: var(--low); color: #fff; }
+
+  /* Findings */
+  .findings-group { margin-bottom: 8px; }
+  .findings-group summary {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+    list-style: none;
+  }
+  body.preview-open .findings-group summary { font-size: 0.85rem; }
+  .findings-group summary::-webkit-details-marker { display: none; }
+  .findings-group summary::before {
+    content: '\25B8';
+    font-size: 0.7rem;
+    transition: transform 0.15s;
+    display: inline-block;
+    width: 10px;
+  }
+  .findings-group[open] summary::before { transform: rotate(90deg); }
+  .findings-group.critical summary { background: var(--critical-bg); color: var(--critical); }
+  .findings-group.high summary { background: var(--high-bg); color: var(--high); }
+  .findings-group.medium summary { background: var(--medium-bg); color: #b7950b; }
+  .findings-group.low summary { background: var(--low-bg); color: var(--low); }
+
+  .finding {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 6px 0 6px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .finding:hover { border-color: #3498db; box-shadow: 0 0 0 2px rgba(52,152,219,0.15); }
+  .finding.active { border-color: #2980b9; box-shadow: 0 0 0 2px rgba(52,152,219,0.3); }
+  .finding .location { font-size: 0.74rem; font-weight: 600; color: #7f8c8d; margin-bottom: 3px; }
+  .finding .description { font-size: 0.85rem; margin-bottom: 6px; }
+  body.preview-open .finding .description { font-size: 0.82rem; }
+  .finding .diff { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .finding .diff-expected, .finding .diff-actual {
+    font-size: 0.74rem;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    word-break: break-word;
+  }
+  .finding .diff-expected { background: var(--pass-bg); border: 1px solid #c3e6cb; }
+  .finding .diff-actual { background: var(--critical-bg); border: 1px solid #f5c6cb; }
+  .finding .diff-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #7f8c8d; margin-bottom: 2px; }
+  .finding .fix { font-size: 0.8rem; color: var(--pass); font-weight: 500; }
+  .finding .fix::before { content: '\2192 '; font-weight: 600; }
+  .finding .view-hint {
+    font-size: 0.7rem;
+    color: #3498db;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .finding:hover .view-hint { opacity: 1; }
+
+  .no-findings {
+    padding: 8px 12px;
+    margin: 4px 0 4px 12px;
+    color: var(--pass);
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+
+  /* Page status table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  body.preview-open table { font-size: 0.78rem; }
+  th {
+    background: #f8f9fa;
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #7f8c8d;
+    border-bottom: 2px solid var(--border);
+  }
+  body.preview-open th { padding: 7px 8px; font-size: 0.65rem; }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  body.preview-open td { padding: 7px 8px; }
+  tr:last-child td { border-bottom: none; }
+  tr[data-page] { cursor: pointer; }
+  tr[data-page]:hover { background: #f0f7ff; }
+  tr[data-page].active { background: #e8f4fd; }
+  .status-pass { color: var(--pass); font-weight: 600; }
+  .status-warn { color: #b7950b; font-weight: 600; }
+  .status-fail { color: var(--critical); font-weight: 600; }
+  .match { color: var(--pass); }
+  .mismatch { color: var(--high); }
+
+  /* Cross-page checklist */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  body.preview-open .checklist li { font-size: 0.82rem; padding: 5px 0; }
+  .checklist li:last-child { border-bottom: none; }
+  .check-pass::before { content: '\2713'; color: var(--pass); font-weight: 700; font-size: 1rem; }
+  .check-warn::before { content: '!'; color: var(--medium); font-weight: 700; font-size: 1rem; }
+  .check-fail::before { content: '\2717'; color: var(--critical); font-weight: 700; font-size: 1rem; }
+
+  /* Report footer */
+  .report-footer {
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: #95a5a6;
+  }
+</style>
+</head>
+<body>
+
+<!-- LEFT PANEL: Report -->
+<div class="panel">
+<div class="panel-inner">
+
+<h1>Briefing Critique: treluxia</h1>
+<p class="subtitle">TRELUXIA (trelimovab) &mdash; <code>sites/treluxia/briefing.md</code> &bull; 2026-03-03</p>
+
+<!-- FIDELITY LEVEL --------------------------------------------------------->
+<h2>Fidelity Level</h2>
+<div class="fidelity">
+  <div class="fidelity-item">
+    <div class="label">Copy</div>
+    <div class="value badge-strict">Strict</div>
+    <div class="evidence">"All copy below is final and MLR-approved. It must be used exactly as written &mdash; do not modify, rephrase, or abbreviate any text."</div>
+  </div>
+  <div class="fidelity-item">
+    <div class="label">Blocks</div>
+    <div class="value badge-strict">Strict</div>
+    <div class="evidence">Each section specifies "Block: hero-teaser", "Block: cards-teaser", etc.</div>
+  </div>
+  <div class="fidelity-item">
+    <div class="label">Images</div>
+    <div class="value badge-strict">Strict</div>
+    <div class="evidence">Each section specifies exact filenames, e.g. "Image: hero-home.jpeg" with CDN URLs</div>
+  </div>
+</div>
+
+<!-- SUMMARY ---------------------------------------------------------------->
+<h2>Summary</h2>
+<div class="summary-row">
+  <div class="summary-card critical"><div class="count">1</div><div class="label">Critical</div></div>
+  <div class="summary-card high"><div class="count">1</div><div class="label">High</div></div>
+  <div class="summary-card medium"><div class="count">3</div><div class="label">Medium</div></div>
+  <div class="summary-card low"><div class="count">0</div><div class="label">Low</div></div>
+</div>
+<div class="verdict blocked">BLOCKED &mdash; Published AEM content has a critical MLR copy error: "and adolescents" removed from the home page hero, narrowing the approved indication. Local drafts are correct; the change was made directly in DA.</div>
+
+<!-- FINDINGS --------------------------------------------------------------->
+<h2>Findings</h2>
+
+<details class="findings-group critical" open>
+  <summary><span class="pill critical">Critical</span> 1 finding</summary>
+
+  <div class="finding" data-page="index" data-section="1" data-label="[AEM] Missing 'and adolescents'" data-source="aem">
+    <div class="location">[AEM] index &rarr; Section 1 (hero-teaser) &rarr; Body text</div>
+    <div class="description">Published AEM content is missing "and adolescents" from the hero body text, narrowing the MLR-approved indication from "adults and adolescents" to just "adults". This was edited directly in DA after upload &mdash; the local draft is correct.</div>
+    <div class="diff">
+      <div>
+        <div class="diff-label">Briefing (MLR-approved)</div>
+        <div class="diff-expected">Broad anti-inflammatory control for adults <strong>and adolescents</strong> with severe uncontrolled asthma, irrespective of inflammatory phenotype. Breathe beyond limits.&sup1;</div>
+      </div>
+      <div>
+        <div class="diff-label">Published AEM</div>
+        <div class="diff-actual">Broad anti-inflammatory control for adults with severe uncontrolled asthma, irrespective of inflammatory phenotype. Breathe beyond limits.&sup1;</div>
+      </div>
+    </div>
+    <div class="fix">Re-upload the local draft (which is correct) using ./tools/upload-to-da.sh treluxia, then re-preview with ./tools/preview-all.sh treluxia</div>
+    <div class="view-hint">Click to view in preview &rarr;</div>
+  </div>
+</details>
+
+<details class="findings-group high" open>
+  <summary><span class="pill high">High</span> 1 finding</summary>
+
+  <div class="finding" data-page="index" data-section="1" data-label="[AEM] Draft-to-published drift" data-source="aem">
+    <div class="location">[AEM] index &rarr; Section 1 (hero-teaser) &rarr; Body text</div>
+    <div class="description">Published content differs from local draft. The local draft is correct (matches briefing), but the published AEM version has diverged. This indicates a post-upload edit was made in DA.</div>
+    <div class="diff">
+      <div>
+        <div class="diff-label">Local draft</div>
+        <div class="diff-expected">...for adults and adolescents with severe...</div>
+      </div>
+      <div>
+        <div class="diff-label">Published AEM</div>
+        <div class="diff-actual">...for adults with severe...</div>
+      </div>
+    </div>
+    <div class="fix">Re-sync by re-uploading: ./tools/upload-to-da.sh treluxia &amp;&amp; ./tools/preview-all.sh treluxia</div>
+    <div class="view-hint">Click to view in preview &rarr;</div>
+  </div>
+</details>
+
+<details class="findings-group medium" open>
+  <summary><span class="pill medium">Medium</span> 3 findings</summary>
+
+  <div class="finding" data-page="resources" data-section="2" data-label="Placeholder link">
+    <div class="location">resources &rarr; Section 2 (cards-teaser) &rarr; Card 1 link</div>
+    <div class="description">Prescribing guide card link uses placeholder <code>href="#"</code>. The briefing specifies link text "Download prescribing guide (PDF)" but does not provide a target URL. This link goes nowhere on the live site.</div>
+    <div class="diff">
+      <div>
+        <div class="diff-label">Expected</div>
+        <div class="diff-expected">href="[real URL for PDF download]"</div>
+      </div>
+      <div>
+        <div class="diff-label">Actual</div>
+        <div class="diff-actual">href="#"</div>
+      </div>
+    </div>
+    <div class="fix">Replace with actual PDF download URL when available, or remove the link until the resource exists</div>
+    <div class="view-hint">Click to view in preview &rarr;</div>
+  </div>
+
+  <div class="finding" data-page="resources" data-section="2" data-label="Placeholder link">
+    <div class="location">resources &rarr; Section 2 (cards-teaser) &rarr; Card 2 link</div>
+    <div class="description">Patient materials card link uses placeholder <code>href="#"</code>. The briefing specifies link text "View patient materials" but does not provide a target URL.</div>
+    <div class="diff">
+      <div>
+        <div class="diff-label">Expected</div>
+        <div class="diff-expected">href="[real URL for patient materials]"</div>
+      </div>
+      <div>
+        <div class="diff-label">Actual</div>
+        <div class="diff-actual">href="#"</div>
+      </div>
+    </div>
+    <div class="fix">Replace with actual URL when available, or remove the link until the resource exists</div>
+    <div class="view-hint">Click to view in preview &rarr;</div>
+  </div>
+
+  <div class="finding" data-page="resources" data-section="2" data-label="Placeholder link">
+    <div class="location">resources &rarr; Section 2 (cards-teaser) &rarr; Card 3 link</div>
+    <div class="description">Clinical data summary card link uses placeholder <code>href="#"</code>. The briefing specifies link text "Request clinical data pack" but does not provide a target URL.</div>
+    <div class="diff">
+      <div>
+        <div class="diff-label">Expected</div>
+        <div class="diff-expected">href="[real URL for data request]"</div>
+      </div>
+      <div>
+        <div class="diff-label">Actual</div>
+        <div class="diff-actual">href="#"</div>
+      </div>
+    </div>
+    <div class="fix">Replace with actual URL when available, or remove the link until the resource exists</div>
+    <div class="view-hint">Click to view in preview &rarr;</div>
+  </div>
+</details>
+
+<details class="findings-group low">
+  <summary><span class="pill low">Low</span> 0 findings</summary>
+  <div class="no-findings">None</div>
+</details>
+
+<!-- PAGE-BY-PAGE STATUS ---------------------------------------------------->
+<h2>Page-by-Page Status</h2>
+<table>
+  <thead>
+    <tr><th>Page</th><th>Sec</th><th>Blocks</th><th>Copy</th><th>Imgs</th><th></th></tr>
+  </thead>
+  <tbody>
+    <tr data-page="index" data-target="header">
+      <td><strong>nav</strong></td>
+      <td class="match">4/4</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td class="match">2/2</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="index" data-target="footer">
+      <td><strong>footer</strong></td>
+      <td class="match">4/4</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td class="match">1/1</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="index">
+      <td><strong>index</strong></td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="luminos-data">
+      <td><strong>luminos-data</strong></td>
+      <td class="match">4/4</td>
+      <td class="match">4/4</td>
+      <td class="match">4/4</td>
+      <td class="match">3/3</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="safety">
+      <td><strong>safety</strong></td>
+      <td class="match">7/7</td>
+      <td class="match">7/7</td>
+      <td class="match">7/7</td>
+      <td class="match">4/4</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="dosing">
+      <td><strong>dosing</strong></td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">4/4</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="how-treluxia-works">
+      <td><strong>how-treluxia-works</strong></td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">5/5</td>
+      <td class="match">4/4</td>
+      <td class="status-pass">PASS</td>
+    </tr>
+    <tr data-page="resources">
+      <td><strong>resources</strong></td>
+      <td class="match">4/4</td>
+      <td class="match">4/4</td>
+      <td class="match">4/4</td>
+      <td class="match">4/4</td>
+      <td class="status-warn">WARN</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- CROSS-PAGE CHECKS ------------------------------------------------------>
+<h2>Cross-Page Checks</h2>
+<ul class="checklist">
+  <li class="check-pass">No local image paths (<code>src="/..."</code>) &mdash; all images use CDN URLs</li>
+  <li class="check-pass">No <code>about:error</code> references in any draft file</li>
+  <li class="check-pass">Consistent CDN base URL (<code>https://treluxia-images.pages.dev/</code>) across all pages</li>
+  <li class="check-pass">CDN reachability &mdash; all 5 sampled image URLs returned HTTP 200</li>
+  <li class="check-pass">Accordion content identical across all 6 pages (PI, AE Reporting, References)</li>
+  <li class="check-pass">Nav links match briefing nav section (5 pages, correct order)</li>
+  <li class="check-pass">Footer links match briefing footer section (5 site pages + 5 regulatory links)</li>
+  <li class="check-pass">All internal <code>/{sitename}/</code> links point to existing draft pages</li>
+  <li class="check-pass">Approval code GB-98204 and DOP March 2026 consistent across nav, footer, and all PI accordions</li>
+  <li class="check-warn">3 placeholder links (<code>href="#"</code>) on resources page &mdash; briefing does not provide target URLs</li>
+</ul>
+
+<!-- PUBLISHED CONTENT VERIFICATION ----------------------------------------->
+<h2>Published Content (AEM Drift Detection)</h2>
+<p class="subtitle" style="margin-bottom:12px">Compared live content at <code>https://main--az-sitebuilder--paolomoz.aem.page/treluxia/</code> against the briefing. All 8 pages fetched successfully.</p>
+
+<div class="finding" data-page="index" data-section="1" data-label="[AEM] MLR copy error" data-source="aem">
+  <div class="location">[AEM] index &rarr; Section 1 (hero-teaser) &rarr; Body text &mdash; <span class="pill critical">CRITICAL</span></div>
+  <div class="description">"and adolescents" deleted from the hero subtitle in the published AEM content. The approved indication covers adults <strong>and adolescents aged &ge;12 years</strong>. The local draft is correct; this was changed in DA.</div>
+  <div class="diff">
+    <div>
+      <div class="diff-label">Briefing</div>
+      <div class="diff-expected">...for adults and adolescents with severe uncontrolled asthma...</div>
+    </div>
+    <div>
+      <div class="diff-label">Published</div>
+      <div class="diff-actual">...for adults with severe uncontrolled asthma...</div>
+    </div>
+  </div>
+  <div class="fix">Re-upload local draft and re-preview to restore the correct text</div>
+  <div class="view-hint">Click to view in preview &rarr;</div>
+</div>
+
+<p style="margin-top:12px; font-size:0.85rem; color:var(--pass); font-weight:500;">All other pages (luminos-data, safety, dosing, how-treluxia-works, resources, nav, footer) &mdash; no drift detected. Published content matches briefing.</p>
+
+<div class="report-footer">
+  Generated by <strong>briefing-critique</strong> skill &bull; <code>drafts/treluxia/*.plain.html</code>
+</div>
+
+</div>
+</div>
+
+<!-- RIGHT PANEL: Preview iframe (hidden by default, slides in on click) -->
+<div class="preview" id="preview">
+  <div class="preview-bar">
+    <div class="dot" id="preview-dot"></div>
+    <div class="url-display" id="url-display"></div>
+    <button class="close-btn" id="close-preview" title="Close preview">&times; Close</button>
+  </div>
+  <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
+
+<script>
+const SITE = 'treluxia';
+const BASE = 'http://localhost:3000';
+const frame = document.getElementById('preview-frame');
+const urlDisplay = document.getElementById('url-display');
+const dot = document.getElementById('preview-dot');
+const closeBtn = document.getElementById('close-preview');
+
+function openPreview() {
+  document.body.classList.add('preview-open');
+}
+
+function closePreview() {
+  document.body.classList.remove('preview-open');
+  frame.src = 'about:blank';
+  document.querySelectorAll('.finding.active').forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('tr.active').forEach(r => r.classList.remove('active'));
+}
+
+function loadPreview(page, { section, target, label } = {}) {
+  let url = `${BASE}/${SITE}/${page === 'index' ? '' : page}`;
+  const params = new URLSearchParams();
+  if (target) params.set('critique-target', target);
+  else if (section) params.set('critique-section', section);
+  if (label) params.set('critique-label', label);
+  const qs = params.toString();
+  if (qs) url += '?' + qs;
+
+  urlDisplay.textContent = url.replace(BASE, '');
+  dot.style.background = (section || target) ? 'var(--critical)' : 'var(--pass)';
+  openPreview();
+  frame.src = url;
+}
+
+closeBtn.addEventListener('click', closePreview);
+
+// Finding cards — click to preview with highlight
+document.querySelectorAll('.finding[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.finding.active').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('tr.active').forEach(r => r.classList.remove('active'));
+    el.classList.add('active');
+    loadPreview(el.dataset.page, {
+      section: el.dataset.section,
+      target: el.dataset.target,
+      label: el.dataset.label,
+    });
+  });
+});
+
+// Page table rows — click to preview without highlight
+document.querySelectorAll('tr[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.finding.active').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('tr.active').forEach(r => r.classList.remove('active'));
+    el.classList.add('active');
+    const target = el.dataset.target;
+    loadPreview(el.dataset.page, target ? { target } : {});
+  });
+});
+</script>
+
+</body>
+</html>
