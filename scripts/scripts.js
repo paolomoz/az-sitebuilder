@@ -180,6 +180,9 @@ function checkAccessGate() {
   const GATE_TTL = 24 * 60 * 60 * 1000; // 24 hours
   const SECRET = 'az26';
 
+  // Allow Lighthouse / PageSpeed Insights through without prompting
+  if (/Lighthouse|PTST/i.test(navigator.userAgent)) return true;
+
   try {
     const stored = JSON.parse(localStorage.getItem(GATE_KEY));
     if (stored && stored.t && (Date.now() - stored.t < GATE_TTL)) return true;
