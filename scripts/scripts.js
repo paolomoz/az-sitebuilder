@@ -176,6 +176,9 @@ function loadDelayed() {
 }
 
 function isAccessGranted() {
+  // Let Lighthouse / PageSpeed Insights / bots through to measure the real site
+  if (navigator.webdriver || /Lighthouse|PTST|HeadlessChrome/i.test(navigator.userAgent)) return true;
+
   const GATE_KEY = 'az-access';
   const GATE_TTL = 24 * 60 * 60 * 1000; // 24 hours
   try {
