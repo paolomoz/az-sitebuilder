@@ -4,7 +4,7 @@ import {
 
 const WORKER_URLS = {
   local: 'http://localhost:8787',
-  prod: 'https://trial-explorer.paolomoz.workers.dev',
+  prod: 'https://trial-explorer.paolo-moz.workers.dev',
 };
 
 function getWorkerUrl() {
