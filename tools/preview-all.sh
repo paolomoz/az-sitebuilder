@@ -65,6 +65,8 @@ while IFS= read -r file; do
     "$ADMIN_API/$SITE_NAME/$page_path")
 
   if [ "$status" = "200" ] || [ "$status" = "201" ] || [ "$status" = "204" ]; then
+    # Warm CDN cache so Experience Catalyst doesn't 404 on first load
+    curl -s -o /dev/null "https://main--$DA_REPO--$DA_ORG.aem.page/$SITE_NAME/$page_path"
     echo "[$COUNT/$TOTAL]   OK: /$SITE_NAME/$page_path ($status)"
     SUCCESS=$((SUCCESS+1))
   else
