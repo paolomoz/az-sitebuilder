@@ -220,6 +220,33 @@ Three fixes required for readable hero text over background images:
 3. Text cell explicitly positioned above the `<picture>` element
 See `blocks/hero-teaser/hero-teaser.css` for the implementation.
 
+## Image Style Tiers
+
+The image generation pipeline supports 4 brand-aligned tiers plus a generic fallback. Pass the tier as the optional 3rd argument to `generate_image` in `image-prompts.sh` files.
+
+| Tier | Name | When to Use | Style |
+|------|------|-------------|-------|
+| `tier1` | Double-Exposure Artistic | Homepage heroes, therapy area cards | Human silhouette filled with scientific/natural imagery |
+| `tier2` | Warm Lifestyle Photography | Product heroes, patient benefit sections | Natural-light photos of patients in everyday settings |
+| `tier3` | Product & Device Photography | Dosing pages, device guides | Clean product shots on white/light backgrounds |
+| `tier4` | Dramatic/Abstract Hero | Oncology heroes, severe disease products | Bold CGI, aurora borealis, dramatic landscapes |
+| (omit) | Generic | Default when no tier specified | Photorealistic pharmaceutical style (backwards compatible) |
+
+**Usage in image-prompts.sh:**
+```bash
+generate_image "hero-home.jpeg" "Woman silhouette filled with teal lung imagery" "tier1"
+generate_image "hero-product.jpeg" "Man walking in a park, golden light" "tier2"
+generate_image "card-device.jpeg" "Pre-filled pen, white background" "tier3"
+generate_image "hero-onc.jpeg" "Aurora borealis, dark teal to warm gold" "tier4"
+generate_image "card-generic.jpeg" "Description..." # no tier = generic fallback
+```
+
+**Config files:**
+- Style brief: `brand/az-image-style-brief.md`
+- Machine-readable config (sourced by `generate-images.sh`): `brand/az-image-style-config.sh`
+- Reference images for style grounding: `brand/reference-images/tier{1,2,3,4}/`
+- Crawler: `node tools/crawl-az-references.mjs` (populates reference images, writes manifest for human review)
+
 ## Design Context
 
 ### Users
