@@ -175,7 +175,34 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
+function checkAccessGate() {
+  const GATE_KEY = 'az-access';
+  const GATE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+  const SECRET = 'az26';
+
+  try {
+    const stored = JSON.parse(localStorage.getItem(GATE_KEY));
+    if (stored && stored.t && (Date.now() - stored.t < GATE_TTL)) return true;
+  } catch { /* invalid entry, prompt again */ }
+
+  // Hide page content while prompting
+  document.body.style.visibility = 'hidden';
+
+  // eslint-disable-next-line no-alert
+  const input = prompt('Enter access code:');
+  if (input === SECRET) {
+    localStorage.setItem(GATE_KEY, JSON.stringify({ t: Date.now() }));
+    document.body.style.visibility = '';
+    return true;
+  }
+
+  document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#830051">Access denied.</p>';
+  document.body.style.visibility = '';
+  return false;
+}
+
 async function loadPage() {
+  if (!checkAccessGate()) return;
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
