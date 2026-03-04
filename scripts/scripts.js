@@ -175,54 +175,26 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
-function isAccessGranted() {
-  // Let Lighthouse / PageSpeed Insights / bots through to measure the real site
-  if (navigator.webdriver || /Lighthouse|PTST|HeadlessChrome/i.test(navigator.userAgent)) return true;
+function checkAccessGate() {
+  // Let bots / Lighthouse / PageSpeed through
+  if (navigator.webdriver || /bot|crawl|spider|Lighthouse|PTST|HeadlessChrome/i.test(navigator.userAgent)) return;
 
-  const GATE_KEY = 'az-access';
-  const GATE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+  const key = 'az-access';
   try {
-    const stored = JSON.parse(localStorage.getItem(GATE_KEY));
-    if (stored && stored.t && (Date.now() - stored.t < GATE_TTL)) return true;
-  } catch { /* invalid entry */ }
-  return false;
-}
+    const s = JSON.parse(localStorage.getItem(key));
+    if (s && Date.now() - s.t < 86400000) return; // 24h
+  } catch { /* ask again */ }
 
-function showAccessGate() {
-  return new Promise((resolve) => {
-    document.body.innerHTML = '';
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;';
-    overlay.innerHTML = `<form style="text-align:center">
-      <p style="color:#830051;font-size:1.2rem;margin-bottom:1rem">Enter access code</p>
-      <input type="password" autofocus style="padding:8px 12px;font-size:1rem;border:1px solid #ccc;border-radius:4px;width:200px">
-      <button type="submit" style="margin-left:8px;padding:8px 16px;font-size:1rem;background:#d0006f;color:#fff;border:none;border-radius:4px;cursor:pointer">Go</button>
-      <p class="gate-error" style="color:#c00;margin-top:0.5rem;min-height:1.4em"></p>
-    </form>`;
-    document.body.appendChild(overlay);
-    document.body.classList.add('appear');
-
-    overlay.querySelector('form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const val = overlay.querySelector('input').value;
-      if (val === 'az26') {
-        localStorage.setItem('az-access', JSON.stringify({ t: Date.now() }));
-        overlay.remove();
-        resolve(true);
-      } else {
-        overlay.querySelector('.gate-error').textContent = 'Incorrect code';
-      }
-    });
-  });
+  // eslint-disable-next-line no-alert
+  if (prompt('Enter access code:') !== 'az26') {
+    document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#830051">Access denied.</p>';
+    throw new Error('access denied');
+  }
+  localStorage.setItem(key, JSON.stringify({ t: Date.now() }));
 }
 
 async function loadPage() {
-  if (!isAccessGranted()) {
-    await showAccessGate();
-    // reload to get fresh DOM from backend
-    window.location.reload();
-    return;
-  }
+  checkAccessGate();
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
