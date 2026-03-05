@@ -1,4 +1,4 @@
-import { transformTrial } from './transform.js';
+import { transformTrial, transformSearch, transformStudy } from './transform.js';
 
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
@@ -46,10 +46,144 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
+    // Route: GET /api/search?q=<query>
+    if (url.pathname === '/api/search') {
+      const query = url.searchParams.get('q')?.trim();
+      if (!query) {
+        return jsonResponse({ error: 'Missing ?q= parameter' }, 400, origin);
+      }
+
+      const cache = caches.default;
+      const searchCacheKey = new Request(`https://trial-cache/search/${encodeURIComponent(query)}`, { method: 'GET' });
+      const cachedSearch = await cache.match(searchCacheKey);
+      if (cachedSearch) {
+        const body = await cachedSearch.text();
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Cache': 'HIT',
+            ...corsHeaders(origin),
+          },
+        });
+      }
+
+      const ctgovBase = env.CTGOV_BASE || 'https://clinicaltrials.gov/api/v2';
+      const searchTerm = `${query} AND AREA[HasResults]true`;
+      const searchUrl = `${ctgovBase}/studies?query.term=${encodeURIComponent(searchTerm)}&pageSize=12&fields=protocolSection`;
+
+      let apiResp;
+      try {
+        apiResp = await fetch(searchUrl, { headers: { Accept: 'application/json' } });
+      } catch (err) {
+        return jsonResponse({ error: `Search failed: ${err.message}` }, 502, origin);
+      }
+
+      if (!apiResp.ok) {
+        return jsonResponse({ error: `ClinicalTrials.gov returned ${apiResp.status}` }, 502, origin);
+      }
+
+      let apiData;
+      try {
+        apiData = await apiResp.json();
+      } catch {
+        return jsonResponse({ error: 'Invalid JSON from ClinicalTrials.gov' }, 502, origin);
+      }
+
+      const results = transformSearch(apiData);
+      const responseBody = JSON.stringify(results);
+
+      const cacheResp = new Response(responseBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
+      await cache.put(searchCacheKey, cacheResp);
+
+      return new Response(responseBody, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Cache': 'MISS',
+          ...corsHeaders(origin),
+        },
+      });
+    }
+
+    // Route: GET /api/study/:nctId (full study — protocol + results)
+    const studyMatch = url.pathname.match(/^\/api\/study\/(NCT\d+)$/i);
+    if (studyMatch) {
+      const nctId = studyMatch[1].toUpperCase();
+
+      const cache = caches.default;
+      const cacheKey = new Request(`https://trial-cache/study/${nctId}`, { method: 'GET' });
+      const cached = await cache.match(cacheKey);
+      if (cached) {
+        const body = await cached.text();
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Cache': 'HIT',
+            ...corsHeaders(origin),
+          },
+        });
+      }
+
+      const ctgovBase = env.CTGOV_BASE || 'https://clinicaltrials.gov/api/v2';
+      const apiUrl = `${ctgovBase}/studies/${nctId}`;
+
+      let apiResponse;
+      try {
+        apiResponse = await fetch(apiUrl, {
+          headers: { Accept: 'application/json' },
+        });
+      } catch (err) {
+        return jsonResponse({ error: `Failed to fetch from ClinicalTrials.gov: ${err.message}` }, 502, origin);
+      }
+
+      if (!apiResponse.ok) {
+        const status = apiResponse.status === 404 ? 404 : 502;
+        return jsonResponse(
+          { error: `ClinicalTrials.gov returned ${apiResponse.status} for ${nctId}` },
+          status,
+          origin,
+        );
+      }
+
+      let study;
+      try {
+        study = await apiResponse.json();
+      } catch {
+        return jsonResponse({ error: 'Invalid JSON from ClinicalTrials.gov' }, 502, origin);
+      }
+
+      const transformed = transformStudy(study);
+      const responseBody = JSON.stringify(transformed);
+
+      const cacheResponse = new Response(responseBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=2592000',
+        },
+      });
+      await cache.put(cacheKey, cacheResponse);
+
+      return new Response(responseBody, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Cache': 'MISS',
+          ...corsHeaders(origin),
+        },
+      });
+    }
+
     // Route: GET /api/trial/:nctId
     const match = url.pathname.match(/^\/api\/trial\/(NCT\d+)$/i);
     if (!match) {
-      return jsonResponse({ error: 'Not found. Use /api/trial/NCTxxxxxxxx' }, 404, origin);
+      return jsonResponse({ error: 'Not found. Use /api/study/NCTxxxxxxxx, /api/trial/NCTxxxxxxxx, or /api/search?q=...' }, 404, origin);
     }
 
     const nctId = match[1].toUpperCase();

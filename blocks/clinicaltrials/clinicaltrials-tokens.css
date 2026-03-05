@@ -1,0 +1,81 @@
+/* blocks/clinicaltrials/clinicaltrials-tokens.css */
+
+.clinicaltrials {
+  /* ===== LAYOUT ===== */
+  --ct-max-width: 1200px;
+  --ct-padding: 24px;
+  --ct-section-gap: 32px;
+
+  /* ===== BRAND COLORS ===== */
+  --ct-primary: #830051;
+  --ct-primary-light: #f4eef2;
+  --ct-cta: #d0006f;
+  --ct-gold: #efab00;
+  --ct-body-color: #363b3b;
+  --ct-heading-color: #830051;
+  --ct-muted: #666;
+  --ct-light-muted: #999;
+  --ct-border: #e5e5e5;
+  --ct-bg-alt: #f8f8f8;
+  --ct-bg-highlight: #f4eef2;
+  --ct-white: #fff;
+
+  /* ===== CHART COLORS (reuse trial-explorer palette) ===== */
+  --ct-color-treatment: #830051;
+  --ct-color-control: #8a9099;
+  --ct-color-alt: #d0006f;
+  --ct-color-alt2: #efab00;
+  --ct-color-ci-line: #363b3b;
+  --ct-color-reference-line: #999;
+  --ct-color-grid: #e5e5e5;
+
+  /* ===== STATUS COLORS ===== */
+  --ct-status-completed: #2e7d32;
+  --ct-status-recruiting: #1565c0;
+  --ct-status-active: #ef6c00;
+  --ct-status-terminated: #c62828;
+  --ct-status-default: #546e7a;
+
+  /* ===== TYPOGRAPHY ===== */
+  --ct-heading-font: 'Roboto Condensed', 'Roboto', sans-serif;
+  --ct-body-font: 'Roboto', sans-serif;
+  --ct-mono-font: 'Roboto Mono', monospace;
+
+  /* ===== TABLE ===== */
+  --ct-table-header-bg: #830051;
+  --ct-table-header-text: #fff;
+  --ct-table-alt-row: #f8f8f8;
+  --ct-table-border: #e5e5e5;
+
+  /* ===== TABS ===== */
+  --ct-tab-active-border: #830051;
+  --ct-tab-active-text: #830051;
+  --ct-tab-inactive-text: #666;
+  --ct-tab-hover-bg: #f4eef2;
+
+  /* ===== BADGE ===== */
+  --ct-badge-bg: #830051;
+  --ct-badge-text: #fff;
+  --ct-badge-radius: 4px;
+  --ct-badge-padding: 4px 10px;
+  --ct-badge-font-size: 12px;
+
+  /* ===== SKELETON ===== */
+  --ct-skeleton-bg: #e5e5e5;
+  --ct-skeleton-shine: #f0f0f0;
+
+  /* ===== TRANSITIONS ===== */
+  --ct-transition: 0.2s ease;
+
+  /* ===== CHART COMPAT (maps trial-explorer chart vars) ===== */
+  --te-color-treatment: var(--ct-color-treatment);
+  --te-color-control: var(--ct-color-control);
+  --te-color-alt: var(--ct-color-alt);
+  --te-color-alt2: var(--ct-color-alt2);
+  --te-color-ci-line: var(--ct-color-ci-line);
+  --te-color-reference-line: var(--ct-color-reference-line);
+  --te-color-grid: var(--ct-color-grid);
+  --te-pill-inactive-bg: #ebefee;
+  --te-heading-color: var(--ct-heading-color);
+  --te-body-color: var(--ct-body-color);
+}
