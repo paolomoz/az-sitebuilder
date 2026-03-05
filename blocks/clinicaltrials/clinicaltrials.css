@@ -101,7 +101,7 @@
 
 .clinicaltrials .ct-nct-id {
   font-size: 13px;
-  color: var(--ct-light-muted);
+  color: var(--ct-muted);
   font-family: var(--ct-mono-font);
 }
 
