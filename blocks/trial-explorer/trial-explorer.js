@@ -319,12 +319,185 @@ function renderTrial(block, data, config) {
   if (baseline) block.append(baseline);
 }
 
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+function renderSearchCard(study) {
+  const card = document.createElement('button');
+  card.className = 'te-search-card';
+  card.type = 'button';
+  card.dataset.nctId = study.nctId;
+
+  const conditions = study.conditions.slice(0, 3).join(', ');
+  card.innerHTML = `
+    <h3 class="te-search-card-title">${study.title}</h3>
+    <div class="te-search-card-meta">
+      ${study.phase ? `<span class="te-badge">${study.phase}</span>` : ''}
+      ${study.enrollment ? `<span class="te-enrollment">n\u00a0=\u00a0${study.enrollment.toLocaleString()}</span>` : ''}
+    </div>
+    ${conditions ? `<p class="te-search-card-conditions">${conditions}</p>` : ''}
+    ${study.sponsor ? `<p class="te-search-card-sponsor">${study.sponsor}</p>` : ''}
+    <span class="te-search-card-nct">${study.nctId}</span>
+  `;
+  return card;
+}
+
+const SEARCH_SUGGESTIONS = ['osimertinib', 'lung cancer', 'dapagliflozin', 'AstraZeneca', 'breast cancer'];
+
+function buildSuggestionChips(input) {
+  const row = document.createElement('div');
+  row.className = 'te-search-suggestions';
+  const label = document.createElement('span');
+  label.textContent = 'Try:';
+  row.append(label);
+
+  SEARCH_SUGGESTIONS.forEach((term) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'te-suggestion-chip';
+    chip.textContent = term;
+    chip.addEventListener('click', () => {
+      input.value = term;
+      input.dispatchEvent(new Event('input'));
+      input.focus();
+    });
+    row.append(chip);
+  });
+  return row;
+}
+
+async function renderSearchMode(block) {
+  const workerUrl = getWorkerUrl();
+  block.innerHTML = '';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'te-search';
+
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.className = 'te-search-input';
+  input.placeholder = 'Search trials by drug, condition, or sponsor\u2026';
+  input.setAttribute('aria-label', 'Search clinical trials');
+  wrapper.append(input);
+
+  wrapper.append(buildSuggestionChips(input));
+
+  const status = document.createElement('div');
+  status.className = 'te-search-status';
+  status.setAttribute('aria-live', 'polite');
+  wrapper.append(status);
+
+  const grid = document.createElement('div');
+  grid.className = 'te-search-grid';
+  wrapper.append(grid);
+
+  block.append(wrapper);
+
+  let lastResults = null;
+
+  async function doSearch(query) {
+    if (!query) {
+      grid.innerHTML = '';
+      status.innerHTML = '';
+      lastResults = null;
+      return;
+    }
+
+    status.innerHTML = 'Searching\u2026';
+    grid.innerHTML = '';
+
+    try {
+      const resp = await fetch(`${workerUrl}/api/search?q=${encodeURIComponent(query)}`);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      lastResults = data;
+
+      status.innerHTML = data.totalCount
+        ? `<strong>${data.totalCount}</strong> trial${data.totalCount !== 1 ? 's' : ''} with results found`
+        : '';
+
+      if (!data.studies.length) {
+        grid.innerHTML = '<p class="te-search-empty">No trials with posted results match your query.</p>';
+        return;
+      }
+
+      data.studies.forEach((study) => {
+        grid.append(renderSearchCard(study));
+      });
+    } catch (err) {
+      status.innerHTML = '';
+      grid.innerHTML = `<p class="te-search-empty">Search failed: ${err.message}</p>`;
+    }
+  }
+
+  const debouncedSearch = debounce(doSearch, 300);
+  input.addEventListener('input', () => debouncedSearch(input.value.trim()));
+
+  grid.addEventListener('click', async (e) => {
+    const card = e.target.closest('.te-search-card');
+    if (!card) return;
+
+    const { nctId } = card.dataset;
+    const study = lastResults?.studies?.find((s) => s.nctId === nctId);
+    const trialName = study?.title || nctId;
+    const lastQuery = input.value;
+
+    const backBtn = document.createElement('button');
+    backBtn.type = 'button';
+    backBtn.className = 'te-back-btn';
+    backBtn.textContent = '\u2190 Back to results';
+
+    backBtn.addEventListener('click', () => {
+      renderSearchMode(block).then(() => {
+        const newInput = block.querySelector('.te-search-input');
+        if (newInput && lastQuery) {
+          newInput.value = lastQuery;
+          newInput.dispatchEvent(new Event('input'));
+        }
+      });
+    });
+
+    // Fade out search, show loading
+    block.innerHTML = '';
+    block.append(backBtn);
+    showLoading(block);
+
+    try {
+      const resp = await fetch(`${workerUrl}/api/trial/${nctId}`);
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error || `HTTP ${resp.status}`);
+      }
+      const data = await resp.json();
+      if (data.error) {
+        showError(block, data.error);
+        block.prepend(backBtn);
+        return;
+      }
+      const skeleton = block.querySelector('.te-skeleton');
+      if (skeleton) skeleton.remove();
+      renderTrial(block, data, { 'trial-name': trialName });
+      block.prepend(backBtn);
+    } catch (err) {
+      showError(block, `Could not load trial ${nctId}: ${err.message}`);
+      block.prepend(backBtn);
+    }
+  });
+
+  input.focus();
+}
+
 export default async function decorate(block) {
   const config = readBlockConfig(block);
   const nctId = config['nct-id'];
 
   if (!nctId) {
-    showError(block, 'No NCT ID configured. Add an "NCT ID" row to the block.');
+    await renderSearchMode(block);
     return;
   }
 

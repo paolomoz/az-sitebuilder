@@ -23,9 +23,18 @@
   animation: ct-shimmer 1.5s infinite;
 }
 
-.clinicaltrials .ct-skeleton-bar:nth-child(1) { width: 70%; height: 28px; }
+.clinicaltrials .ct-skeleton-bar:nth-child(1) {
+  width: 70%;
+  height: 28px;
+}
+
 .clinicaltrials .ct-skeleton-bar:nth-child(2) { width: 40%; }
-.clinicaltrials .ct-skeleton-bar:nth-child(3) { width: 90%; height: 160px; }
+
+.clinicaltrials .ct-skeleton-bar:nth-child(3) {
+  width: 90%;
+  height: 160px;
+}
+
 .clinicaltrials .ct-skeleton-bar:nth-child(4) { width: 60%; }
 
 @keyframes ct-shimmer {
@@ -93,8 +102,10 @@
 
 .clinicaltrials .ct-status-badge[data-status="COMPLETED"] { background: var(--ct-status-completed); }
 .clinicaltrials .ct-status-badge[data-status="RECRUITING"] { background: var(--ct-status-recruiting); }
+
 .clinicaltrials .ct-status-badge[data-status="ACTIVE_NOT_RECRUITING"],
 .clinicaltrials .ct-status-badge[data-status="ENROLLING_BY_INVITATION"] { background: var(--ct-status-active); }
+
 .clinicaltrials .ct-status-badge[data-status="TERMINATED"],
 .clinicaltrials .ct-status-badge[data-status="WITHDRAWN"],
 .clinicaltrials .ct-status-badge[data-status="SUSPENDED"] { background: var(--ct-status-terminated); }
@@ -277,6 +288,22 @@
   margin-bottom: 24px;
 }
 
+.clinicaltrials .ct-criteria-list {
+  padding: 0 0 0 24px;
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.clinicaltrials .ct-criteria-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--ct-border);
+}
+
+.clinicaltrials .ct-criteria-list li:last-child {
+  border-bottom: none;
+}
+
 /* ===== OUTCOME CARDS ===== */
 .clinicaltrials .ct-outcome-card {
   background: var(--ct-white);
@@ -333,6 +360,54 @@
 .clinicaltrials .ct-outcome-type-badge.other {
   background: var(--ct-border);
   color: var(--ct-body-color);
+}
+
+/* ===== RESULTS SUMMARY ===== */
+.clinicaltrials .ct-results-summary {
+  background: var(--ct-bg-highlight);
+  border-left: 4px solid var(--ct-primary);
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.clinicaltrials .ct-results-summary h3 {
+  font-family: var(--ct-heading-font);
+  color: var(--ct-heading-color);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clinicaltrials .ct-results-summary-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.clinicaltrials .ct-results-summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.clinicaltrials .ct-rsum-label {
+  font-size: 11px;
+  color: var(--ct-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clinicaltrials .ct-rsum-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ct-heading-color);
+  line-height: 1.2;
+}
+
+.clinicaltrials .ct-rsum-value.ct-significant {
+  color: var(--ct-cta);
 }
 
 /* ===== RESULTS TAB ===== */
@@ -500,6 +575,57 @@
   font-size: 12px;
   font-weight: 400;
   color: var(--ct-muted);
+}
+
+/* ===== COUNTRY GROUPING ===== */
+.clinicaltrials .ct-country-header {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  background: var(--ct-bg-alt);
+  border: 1px solid var(--ct-border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: var(--ct-body-font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ct-heading-color);
+  cursor: pointer;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background var(--ct-transition);
+}
+
+.clinicaltrials .ct-country-header:hover {
+  background: var(--ct-bg-highlight);
+}
+
+.clinicaltrials .ct-country-header::after {
+  content: '+';
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ct-muted);
+}
+
+.clinicaltrials .ct-country-header[aria-expanded='true']::after {
+  content: '\2212';
+}
+
+.clinicaltrials .ct-country-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ct-muted);
+}
+
+.clinicaltrials .ct-country-body {
+  display: none;
+  padding: 8px 0 12px;
+}
+
+.clinicaltrials .ct-country-body[aria-hidden='false'] {
+  display: block;
 }
 
 /* ===== LOCATION CARDS ===== */
@@ -783,8 +909,44 @@
   overflow-x: auto;
 }
 
+/* ===== MOBILE: TAB OVERFLOW INDICATOR ===== */
+@media (width < 600px) {
+  .clinicaltrials .ct-tabs {
+    position: relative;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+
+  /* Reorder stats above charts on mobile */
+  .clinicaltrials .ct-results-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .clinicaltrials .ct-results-layout .ct-stats {
+    order: -1;
+  }
+}
+
+/* ===== BASELINE STICKY FIRST COLUMN ===== */
+.clinicaltrials .ct-baseline-table .ct-table th:first-child,
+.clinicaltrials .ct-baseline-table .ct-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--ct-white);
+  z-index: 1;
+}
+
+.clinicaltrials .ct-baseline-table .ct-table tr:nth-child(even) td:first-child {
+  background: var(--ct-table-alt-row);
+}
+
+.clinicaltrials .ct-baseline-table .ct-table th:first-child {
+  background: var(--ct-table-header-bg);
+  z-index: 2;
+}
+
 /* ===== DESKTOP LAYOUT ===== */
-@media (min-width: 900px) {
+@media (width >= 900px) {
   .clinicaltrials .ct-header h2 { font-size: 26px; }
 
   .clinicaltrials .ct-info-grid { grid-template-columns: 180px 1fr; }
@@ -807,6 +969,6 @@
   .clinicaltrials .ct-stat-grid { grid-template-columns: 1fr; }
 }
 
-@media (min-width: 600px) and (max-width: 899px) {
+@media (width >= 600px) and (width <= 899px) {
   .clinicaltrials .ct-search-grid { grid-template-columns: repeat(2, 1fr); }
 }

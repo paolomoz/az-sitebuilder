@@ -78,7 +78,7 @@ const TAB_DEFS = [
   { id: 'overview', label: 'Overview' },
   { id: 'eligibility', label: 'Eligibility' },
   { id: 'plan', label: 'Study Plan' },
-  { id: 'outcomes', label: 'Outcome Measures' },
+  { id: 'outcomes', label: 'Study Endpoints' },
   { id: 'results', label: 'Results' },
   { id: 'locations', label: 'Locations' },
   { id: 'info', label: 'More Info' },
@@ -180,6 +180,26 @@ function buildOverviewPanel(data) {
   return frag;
 }
 
+// ─── CRITERIA LIST HELPER ───
+
+function buildCriteriaList(text, type) {
+  const ol = el('ol', `ct-criteria-list ct-criteria-${type}`);
+  const lines = text.split(/\n/).map((l) => l.trim()).filter(Boolean);
+  lines.forEach((line) => {
+    // Strip leading numbering like "1." or "- "
+    const cleaned = line.replace(/^\d+[.)]\s*/, '').replace(/^[-•]\s*/, '');
+    if (!cleaned) return;
+    const li = document.createElement('li');
+    li.textContent = cleaned;
+    ol.append(li);
+  });
+  if (!ol.children.length) {
+    // Fallback: render as plain text
+    return el('div', 'ct-criteria', text);
+  }
+  return ol;
+}
+
 // ─── ELIGIBILITY PANEL ───
 
 function buildEligibilityPanel(data) {
@@ -200,10 +220,30 @@ function buildEligibilityPanel(data) {
   });
   frag.append(grid);
 
-  // Criteria
+  // Criteria — parse into Inclusion / Exclusion sections
   if (p.eligibility.criteria) {
-    frag.append(el('h3', 'ct-subsection-title', 'Inclusion / Exclusion Criteria'));
-    frag.append(el('div', 'ct-criteria', p.eligibility.criteria));
+    const raw = p.eligibility.criteria;
+    const inclIdx = raw.search(/inclusion\s+criteria/i);
+    const exclIdx = raw.search(/exclusion\s+criteria/i);
+
+    if (inclIdx >= 0 && exclIdx > inclIdx) {
+      const inclText = raw.substring(inclIdx, exclIdx).trim();
+      const exclText = raw.substring(exclIdx).trim();
+
+      frag.append(el('h3', 'ct-subsection-title', 'Inclusion Criteria'));
+      frag.append(buildCriteriaList(
+        inclText.replace(/^inclusion\s+criteria:?\s*/i, ''),
+        'inclusion',
+      ));
+      frag.append(el('h3', 'ct-subsection-title', 'Exclusion Criteria'));
+      frag.append(buildCriteriaList(
+        exclText.replace(/^exclusion\s+criteria:?\s*/i, ''),
+        'exclusion',
+      ));
+    } else {
+      frag.append(el('h3', 'ct-subsection-title', 'Eligibility Criteria'));
+      frag.append(el('div', 'ct-criteria', raw));
+    }
   }
 
   return frag;
@@ -548,8 +588,53 @@ function buildResultsAdverseEventsSubPanel(data) {
   return frag;
 }
 
+function buildResultsSummary(data) {
+  const allAnalyses = (data.outcomes || []).flatMap((o) => o.analyses || []);
+  if (!allAnalyses.length) return null;
+
+  const card = el('div', 'ct-results-summary');
+  card.innerHTML = '<h3>Key Finding</h3>';
+  const grid = el('div', 'ct-results-summary-grid');
+
+  allAnalyses.slice(0, 1).forEach((a) => {
+    if (a.estimateValue != null) {
+      const item = el('div', 'ct-results-summary-item');
+      const isSig = a.pValue != null && a.pValue < 0.05;
+      item.innerHTML = `
+        <span class="ct-rsum-label">${a.estimateType || 'Estimate'}</span>
+        <span class="ct-rsum-value${isSig ? ' ct-significant' : ''}">${a.estimateValue.toFixed(2)}</span>
+      `;
+      grid.append(item);
+    }
+    if (a.ciLower != null && a.ciUpper != null) {
+      const item = el('div', 'ct-results-summary-item');
+      item.innerHTML = `
+        <span class="ct-rsum-label">${a.ciPercent || 95}% CI</span>
+        <span class="ct-rsum-value">${a.ciLower.toFixed(2)} – ${a.ciUpper.toFixed(2)}</span>
+      `;
+      grid.append(item);
+    }
+    if (a.pValue != null) {
+      const item = el('div', 'ct-results-summary-item');
+      const isSig = a.pValue < 0.05;
+      item.innerHTML = `
+        <span class="ct-rsum-label">p-value</span>
+        <span class="ct-rsum-value${isSig ? ' ct-significant' : ''}">${a.pValue < 0.001 ? '<0.001' : a.pValue.toFixed(4)}</span>
+      `;
+      grid.append(item);
+    }
+  });
+
+  card.append(grid);
+  return card;
+}
+
 function buildResultsPanel(data) {
   const frag = document.createDocumentFragment();
+
+  // Results Summary card
+  const summary = buildResultsSummary(data);
+  if (summary) frag.append(summary);
 
   // Sub-tabs within Results
   const subTabDefs = [
@@ -613,20 +698,53 @@ function buildLocationsPanel(data) {
     frag.append(wrap);
   }
 
-  // Locations
+  // Locations grouped by country
   if (p.contacts.locations.length) {
-    frag.append(el('h3', 'ct-subsection-title', `Study Locations (${p.contacts.locations.length})`));
-    const grid = el('div', 'ct-locations-grid');
+    const byCountry = new Map();
     p.contacts.locations.forEach((loc) => {
-      const card = el('div', 'ct-location-card');
-      const parts = [loc.city, loc.state, loc.zip, loc.country].filter(Boolean).join(', ');
-      card.innerHTML = `
-        <div class="ct-location-facility">${loc.facility || 'Unnamed Facility'}</div>
-        <div class="ct-location-address">${parts}</div>
-      `;
-      grid.append(card);
+      const country = loc.country || 'Unknown';
+      if (!byCountry.has(country)) byCountry.set(country, []);
+      byCountry.get(country).push(loc);
     });
-    frag.append(grid);
+
+    const countryCount = byCountry.size;
+    const locCount = p.contacts.locations.length;
+    frag.append(el(
+      'h3',
+      'ct-subsection-title',
+      `Study Locations (${locCount} across ${countryCount} ${countryCount === 1 ? 'country' : 'countries'})`,
+    ));
+
+    byCountry.forEach((locs, country) => {
+      const header = el('button', 'ct-country-header');
+      header.type = 'button';
+      header.setAttribute('aria-expanded', countryCount === 1 ? 'true' : 'false');
+      header.innerHTML = `<span>${country} <span class="ct-country-count">(${locs.length})</span></span>`;
+
+      const body = el('div', 'ct-country-body');
+      body.setAttribute('aria-hidden', countryCount === 1 ? 'false' : 'true');
+
+      const grid = el('div', 'ct-locations-grid');
+      locs.forEach((loc) => {
+        const card = el('div', 'ct-location-card');
+        const parts = [loc.city, loc.state, loc.zip].filter(Boolean).join(', ');
+        card.innerHTML = `
+          <div class="ct-location-facility">${loc.facility || 'Unnamed Facility'}</div>
+          <div class="ct-location-address">${parts}</div>
+        `;
+        grid.append(card);
+      });
+      body.append(grid);
+
+      header.addEventListener('click', () => {
+        const expanded = header.getAttribute('aria-expanded') === 'true';
+        header.setAttribute('aria-expanded', String(!expanded));
+        body.setAttribute('aria-hidden', String(expanded));
+      });
+
+      frag.append(header);
+      frag.append(body);
+    });
   }
 
   if (!p.contacts.officials.length && !p.contacts.locations.length) {
@@ -802,9 +920,11 @@ async function renderSearchMode(block) {
         card.type = 'button';
         card.dataset.nctId = study.nctId;
         const conditions = study.conditions.slice(0, 3).join(', ');
+        const statusLabel = formatStatus(study.status || '');
         card.innerHTML = `
           <h3>${study.title}</h3>
           <div class="ct-search-card-meta">
+            ${study.status ? `<span class="ct-status-badge" data-status="${study.status}">${statusLabel}</span>` : ''}
             ${study.phase ? `<span class="ct-badge">${study.phase}</span>` : ''}
             ${study.enrollment ? `<span class="ct-enrollment">n\u00a0=\u00a0${study.enrollment.toLocaleString()}</span>` : ''}
           </div>

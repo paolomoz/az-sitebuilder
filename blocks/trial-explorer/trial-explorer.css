@@ -326,6 +326,182 @@
   border: 0;
 }
 
+/* ===== SEARCH MODE ===== */
+.trial-explorer .te-search {
+  padding: var(--te-padding);
+}
+
+.trial-explorer .te-search-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: var(--te-body-font);
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.trial-explorer .te-search-input:focus {
+  border-color: var(--te-heading-color);
+  box-shadow: 0 0 0 3px rgb(131 0 81 / 15%);
+}
+
+.trial-explorer .te-search-input::placeholder {
+  color: #999;
+}
+
+.trial-explorer .te-search-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0 4px;
+}
+
+.trial-explorer .te-search-suggestions span {
+  font-size: 13px;
+  color: #666;
+  line-height: 30px;
+}
+
+.trial-explorer .te-suggestion-chip {
+  appearance: none;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-family: var(--te-body-font);
+  color: var(--te-body-color);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.trial-explorer .te-suggestion-chip:hover {
+  border-color: var(--te-heading-color);
+  background: var(--te-heading-color);
+  color: #fff;
+}
+
+.trial-explorer .te-search-status {
+  font-size: 14px;
+  color: var(--te-body-color);
+  min-height: 22px;
+  padding: 10px 0 6px;
+}
+
+.trial-explorer .te-search-status strong {
+  font-weight: 700;
+}
+
+.trial-explorer .te-search-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.trial-explorer .te-search-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+  padding: 16px 16px 16px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: var(--te-body-font);
+}
+
+.trial-explorer .te-search-card:hover {
+  border-color: #e0e0e0;
+  border-left-color: var(--te-heading-color);
+  box-shadow: 0 4px 16px rgb(131 0 81 / 10%);
+}
+
+.trial-explorer .te-search-card:focus-visible {
+  border-left-color: var(--te-heading-color);
+  box-shadow: 0 0 0 3px rgb(131 0 81 / 15%);
+  outline: none;
+}
+
+.trial-explorer .te-search-card-title {
+  font-family: var(--te-heading-font);
+  color: var(--te-heading-color);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trial-explorer .te-search-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.trial-explorer .te-search-card-conditions {
+  font-size: 13px;
+  color: var(--te-body-color);
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.trial-explorer .te-search-card-sponsor {
+  font-size: 13px;
+  color: #888;
+  margin: 2px 0 0;
+}
+
+.trial-explorer .te-search-card-nct {
+  font-size: 12px;
+  color: #999;
+  font-family: monospace;
+}
+
+.trial-explorer .te-search-empty {
+  font-size: 14px;
+  color: #666;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.trial-explorer .te-back-btn {
+  appearance: none;
+  background: var(--te-heading-color);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--te-body-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  padding: 8px 20px;
+  margin: var(--te-padding) var(--te-padding) 0;
+  display: inline-block;
+  transition: background 0.15s ease;
+  position: sticky;
+  top: 80px;
+  z-index: 10;
+}
+
+.trial-explorer .te-back-btn:hover {
+  background: #6b0042;
+}
+
+.trial-explorer .te-back-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgb(131 0 81 / 25%);
+  outline: none;
+}
+
 /* ===== DESKTOP LAYOUT ===== */
 @media (width >= 900px) {
   .trial-explorer .te-header h2 {
@@ -350,5 +526,15 @@
 
   .trial-explorer .te-stat-grid {
     grid-template-columns: 1fr;
+  }
+
+  .trial-explorer .te-search-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (600px <= width < 900px) {
+  .trial-explorer .te-search-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
