@@ -175,7 +175,7 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
-const ACCESS_GATE_ENABLED = false;
+const ACCESS_GATE_ENABLED = true;
 
 function checkAccessGate() {
   if (!ACCESS_GATE_ENABLED) return;
