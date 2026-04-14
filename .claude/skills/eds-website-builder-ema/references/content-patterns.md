@@ -440,7 +440,7 @@ Navigation links that point to non-existent pages create a broken user experienc
 
 ```bash
 # List all pages in drafts (excluding nav/footer fragments)
-find drafts -name '*.plain.html' ! -name 'nav.*' ! -name 'footer.*' | sed 's|^drafts||;s|\.plain\.html$||;s|/index$|/|' | sort
+find content -name '*.plain.html' ! -name 'nav.*' ! -name 'footer.*' | sed 's|^drafts||;s|\.plain\.html$||;s|/index$|/|' | sort
 
 # Extract all links from nav
 grep -oP 'href="\K[^"]+' content/nav.plain.html | grep -v '^#' | sort

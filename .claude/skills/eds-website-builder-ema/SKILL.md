@@ -21,6 +21,14 @@ Assume the following about the ExCat environment:
 - **No user-level CLAUDE.md or auto-memory.** Everything the skill relies on must be inside this skill's files or the project. If a lesson matters, inline it here.
 - **Companion skills** (`az-briefing-builder`, `briefing-critique`, `brand-extractor`, `ai-image-generator`, etc.) are expected to live in the same project's `.claude/skills/` directory. Cross-references below assume that.
 
+## HARD RULES (read before writing any file)
+
+1. **Write every page, nav, footer, and draft DIRECTLY to `content/{sitename}/`. Never write to `drafts/`, never copy from `drafts/` to `content/`.** The rest of this document and the `references/` files contain many `drafts/` mentions left from the parent skill — treat those as a translation artefact. `content/` is the only valid target in ExCat.
+2. **Do not start, stop, or debug the dev server.** AEM up is already running against `content/` and serves files as soon as you write them. If a page appears not to load, your job is to write it into `content/` — not to troubleshoot the server, not to chase 404s, not to look for a proxy / remote-CDN workaround.
+3. **Preview is the user's job, not yours.** When files are in place and structural checks pass, stop and hand off: "Files written to `content/{sitename}/`. Open the ExCat preview to review." Do not call `curl`, `open`, `upload-to-da.sh`, `preview-all.sh`, `gh`, or `wrangler`.
+
+If the rest of this document or a `references/` file contradicts any of the three rules above, the hard rules win.
+
 ## When to Use
 
 - Working inside Experience Catalyst (aemcoder.adobe.io) and the user wants to create/extend an EDS site
@@ -120,9 +128,18 @@ z-index: 2  — content row container
 
 All three fixes are required. Missing any one produces text that looks transparent or washed out.
 
-### Preview in Experience Catalyst
+### Preview is handled by ExCat — do not debug 404s yourself
 
-ExCat's internal AEM up process serves the `content/` folder directly from the workspace volume. Pages render immediately after file write — no DA upload or preview refresh is needed. Use the ExCat preview UI to inspect pages; refresh after editing a `.plain.html` file.
+ExCat's internal AEM up serves `content/` directly from the workspace volume. Pages render as soon as you write them, and the user sees them in the ExCat preview UI.
+
+**If a `curl http://localhost:3000/{sitename}/...` returns 404, stop.** Common wrong reflexes to avoid:
+
+- Trying to restart the dev server or change its `--html-folder` flag. Don't — it's managed by ExCat.
+- Copying files from `drafts/` to `content/`. Don't — files should have been written to `content/` in the first place.
+- Assuming the dev server needs a remote DA upload to resolve new paths. That's the parent `eds-website-builder` pitfall. In ExCat the local `content/` folder *is* the source of truth; there is no remote round-trip.
+- Using `curl` at all to "verify" the pages. The user's preview is the verification.
+
+The correct action when files are in `content/{sitename}/`: tell the user the site is ready and to check the ExCat preview. If the user reports the page isn't rendering, then inspect the file contents — but never the server.
 
 ### Parallel agents produce broken block structure
 
@@ -222,7 +239,7 @@ npx @adobe/aem-cli up --no-open
 
 For local-only content (no CMS), create a `content/` folder with `.plain.html` files:
 ```bash
-mkdir drafts
+mkdir content
 npx @adobe/aem-cli up --no-open --html-folder content
 ```
 
@@ -696,7 +713,7 @@ Choose navigation depth based on the site scope:
 Quick audit:
 ```bash
 # Compare page inventory against nav links
-find drafts -name '*.plain.html' ! -name 'nav.*' ! -name 'footer.*' | sort
+find content -name '*.plain.html' ! -name 'nav.*' ! -name 'footer.*' | sort
 grep -oP 'href="\K[^"]+' content/nav.plain.html | grep -v '^#' | sort
 ```
 

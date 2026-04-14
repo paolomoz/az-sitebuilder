@@ -345,7 +345,7 @@ done
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-DRAFTS_DIR="$PROJECT_DIR/drafts"
+DRAFTS_DIR="$PROJECT_DIR/content"
 
 # Read env vars from .env file
 DA_CLIENT_ID=$(grep "DA_CLIENT_ID" "$PROJECT_DIR/.env" | sed 's/DA_CLIENT_ID=//' | tr -d '"')
@@ -458,7 +458,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-DRAFTS_DIR="$PROJECT_DIR/drafts"
+DRAFTS_DIR="$PROJECT_DIR/content"
 DA_ORG=$(grep "^DA_ORG" "$PROJECT_DIR/.env" | sed 's/DA_ORG=//' | tr -d '"')
 DA_REPO=$(grep "^DA_REPO" "$PROJECT_DIR/.env" | sed 's/DA_REPO=//' | tr -d '"')
 ADMIN_API="https://admin.hlx.page/preview/$DA_ORG/$DA_REPO/main"

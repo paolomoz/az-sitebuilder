@@ -435,7 +435,7 @@ Replace placeholder URLs with public Cloudflare URLs in draft HTML:
 ```bash
 # Replace all at once
 CDN_URL="https://my-site-images.pages.dev"
-find drafts -name '*.plain.html' -exec sed -i '' "s|/images/|${CDN_URL}/|g" {} \;
+find content -name '*.plain.html' -exec sed -i '' "s|/images/|${CDN_URL}/|g" {} \;
 ```
 
 Or use a per-file sed script for specific URL-to-URL replacements:

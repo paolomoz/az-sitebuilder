@@ -55,7 +55,7 @@ mountpoints:
 Create draft content as static HTML files:
 
 ```bash
-mkdir drafts
+mkdir content
 
 # Create a page
 cat > content/index.plain.html << 'EOF'
