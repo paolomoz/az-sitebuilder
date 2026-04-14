@@ -25,7 +25,7 @@ Assume the following about the ExCat environment:
 
 1. **Write every page, nav, footer, and draft DIRECTLY to `content/{sitename}/`. Never write to `drafts/`, never copy from `drafts/` to `content/`.** The rest of this document and the `references/` files contain many `drafts/` mentions left from the parent skill — treat those as a translation artefact. `content/` is the only valid target in ExCat.
 2. **Do not start, stop, or debug the dev server.** AEM up is already running against `content/` and serves files as soon as you write them. If a page appears not to load, your job is to write it into `content/` — not to troubleshoot the server, not to chase 404s, not to look for a proxy / remote-CDN workaround.
-3. **Preview is the user's job, not yours.** When files are in place and structural checks pass, stop and hand off: "Files written to `content/{sitename}/`. Open the ExCat preview to review." Do not call `curl`, `open`, `upload-to-da.sh`, `preview-all.sh`, `gh`, or `wrangler`.
+3. **Do not preview or verify rendering in any way.** Your job ends at file-write + structural validation. Do not `curl` the dev server, do not `open` a browser, do not check that pages render, do not look up the preview URL, do not wait for the server to "pick up" the directory. As soon as files are written and structural checks pass, stop and hand off with one line: "Files written to `content/{sitename}/`. Open the ExCat preview to review." Do not call `curl`, `open`, `upload-to-da.sh`, `preview-all.sh`, `gh`, or `wrangler`. This is a live-demo optimisation — every extra verification step costs demo time for zero gain, because the user will see the preview themselves.
 
 If the rest of this document or a `references/` file contradicts any of the three rules above, the hard rules win.
 
@@ -918,8 +918,27 @@ grep -c 'class="accordion"' content/{sitename}/*.plain.html
 echo "--- Metadata count (expect 1 per content page, 0 for nav/footer) ---"
 grep -c 'class="metadata"' content/{sitename}/*.plain.html
 
-# 2. No empty block class divs (broken nesting — content ended up outside the block)
-grep -n 'class="\(hero-teaser\|columns-teaser\|cards-teaser\|tabs-large\|introduction\|title\|table-data\|accordion\)">' content/{sitename}/*.plain.html | grep '>\s*$' && echo "BLOCKED: empty block divs found — content is outside the block" || echo "OK: no empty block divs"
+# 2. No empty block class divs (broken nesting — content ended up outside the block).
+# Matches two failure modes only:
+#   a) single-line empty block:  <div class="hero-teaser"></div>
+#   b) opening tag immediately followed by closing tag on the next line (no content)
+# A properly-nested block has a child <div> on the next line, which does NOT match.
+python3 -c "
+import re, glob, sys
+pattern = re.compile(r'<div class=\"(hero-teaser|columns-teaser|cards-teaser|tabs-large|introduction|title|table-data|accordion)\">\s*</div>', re.MULTILINE)
+bad = []
+for path in glob.glob('content/{sitename}/*.plain.html'):
+    with open(path) as f:
+        text = f.read()
+    for m in pattern.finditer(text):
+        line = text[:m.start()].count('\n') + 1
+        bad.append(f'{path}:{line}: empty {m.group(1)} block')
+if bad:
+    print('\n'.join(bad))
+    print('BLOCKED: empty block divs found — content is outside the block')
+    sys.exit(1)
+print('OK: no empty block divs')
+"
 
 # 3. No metadata in <head> tags (DA ignores these — must be a metadata block div)
 grep -rn '<head>' content/{sitename}/*.plain.html | grep -v nav | grep -v footer && echo "WARNING: check that metadata uses <div class='metadata'>, not <head><meta> tags" || echo "OK"
@@ -927,7 +946,7 @@ grep -rn '<head>' content/{sitename}/*.plain.html | grep -v nav | grep -v footer
 
 If any check fails, **read the broken file, compare against `examples/reference-page.plain.html`, and rewrite it** with correct nesting. Do not attempt surgical fixes on structurally broken files — rewriting is faster and more reliable.
 
-**Step 2 — Tell the user to preview in ExCat.** The internal AEM up serves the `content/` folder directly, so pages render immediately after file write. DA export is done manually from the ExCat workspace UI when the user is ready to publish.
+**Step 2 — Stop and hand off.** Do NOT curl, open, or otherwise verify rendering (HARD RULE 3). Emit a single one-line summary naming the files written and tell the user to open the ExCat preview. That is the end of the skill.
 
 ### Key Design Decisions
 
