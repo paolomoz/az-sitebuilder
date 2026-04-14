@@ -172,6 +172,7 @@ When asked to "update the skill" or "fix the skill", edit the **source files** a
 
 - **eds-website-builder**: `/Users/paolo/claude/skills/skills/eds-website-builder/SKILL.md`
 - **briefing-critique**: `/Users/paolo/claude/skills/skills/briefing-critique/SKILL.md`
+- **eds-website-builder-ema**: `.claude/skills/eds-website-builder-ema/SKILL.md` — project-local variant for Experience Catalyst (aemcoder.adobe.io). Uses `content/` instead of `drafts/` and omits DA upload / preview execution (handled by the ExCat UI). Edit in place; do not sync from the user-level `eds-website-builder`.
 
 ## Lessons Learned (from Zenvara & Clareon builds)
 
